@@ -1,0 +1,9 @@
+name: "nat-guide"
+output_dir: "docs"
+navbar:
+  title: "Neuroanatomy Toolbox (nat) guide "
+  left:
+   - text: "Home"
+     href: index.html
+   - text: "Speed and Distance"
+     href: testfile.html
