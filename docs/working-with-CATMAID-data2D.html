@@ -1,0 +1,547 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+
+
+
+<title>Working with CATMAID(FAFB) Data</title>
+
+<script src="site_libs/jquery-1.11.3/jquery.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="site_libs/bootstrap-3.3.5/css/bootstrap.min.css" rel="stylesheet" />
+<script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<script src="site_libs/navigation-1.1/tabsets.js"></script>
+<link href="site_libs/highlightjs-9.12.0/default.css" rel="stylesheet" />
+<script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
+
+<style type="text/css">code{white-space: pre;}</style>
+<style type="text/css">
+  pre:not([class]) {
+    background-color: white;
+  }
+</style>
+<script type="text/javascript">
+if (window.hljs) {
+  hljs.configure({languages: []});
+  hljs.initHighlightingOnLoad();
+  if (document.readyState && document.readyState === "complete") {
+    window.setTimeout(function() { hljs.initHighlighting(); }, 0);
+  }
+}
+</script>
+
+
+
+<style type="text/css">
+h1 {
+  font-size: 34px;
+}
+h1.title {
+  font-size: 38px;
+}
+h2 {
+  font-size: 30px;
+}
+h3 {
+  font-size: 24px;
+}
+h4 {
+  font-size: 18px;
+}
+h5 {
+  font-size: 16px;
+}
+h6 {
+  font-size: 12px;
+}
+.table th:not([align]) {
+  text-align: left;
+}
+</style>
+
+
+
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+code {
+  color: inherit;
+  background-color: rgba(0, 0, 0, 0.04);
+}
+img {
+  max-width:100%;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+summary {
+  display: list-item;
+}
+</style>
+
+
+<style type="text/css">
+/* padding for bootstrap navbar */
+body {
+  padding-top: 51px;
+  padding-bottom: 40px;
+}
+/* offset scroll position for anchor links (for fixed navbar)  */
+.section h1 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h2 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h3 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h4 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h5 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h6 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.dropdown-submenu {
+  position: relative;
+}
+.dropdown-submenu>.dropdown-menu {
+  top: 0;
+  left: 100%;
+  margin-top: -6px;
+  margin-left: -1px;
+  border-radius: 0 6px 6px 6px;
+}
+.dropdown-submenu:hover>.dropdown-menu {
+  display: block;
+}
+.dropdown-submenu>a:after {
+  display: block;
+  content: " ";
+  float: right;
+  width: 0;
+  height: 0;
+  border-color: transparent;
+  border-style: solid;
+  border-width: 5px 0 5px 5px;
+  border-left-color: #cccccc;
+  margin-top: 5px;
+  margin-right: -10px;
+}
+.dropdown-submenu:hover>a:after {
+  border-left-color: #ffffff;
+}
+.dropdown-submenu.pull-left {
+  float: none;
+}
+.dropdown-submenu.pull-left>.dropdown-menu {
+  left: -100%;
+  margin-left: 10px;
+  border-radius: 6px 0 6px 6px;
+}
+</style>
+
+<script>
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark it active
+  menuAnchor.parent().addClass('active');
+
+  // if it's got a parent navbar menu mark it active as well
+  menuAnchor.closest('li.dropdown').addClass('active');
+});
+</script>
+
+<!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  background: white;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "&#xe258;";
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+  background-color: transparent;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
+<!-- code folding -->
+
+
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
+
+
+
+
+<div class="navbar navbar-default  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">Neuroanatomy Toolbox (nat) guide </a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li>
+  <a href="index.html">Home</a>
+</li>
+<li>
+  <a href="basic-nat-functions.html">Basic Nat Funcions</a>
+</li>
+<li>
+  <a href="nblast.html">NBLAST</a>
+</li>
+<li>
+  <a href="working-with-CATMAID-data2D.html">CATMAID</a>
+</li>
+<li>
+  <a href="working-with-hemibrain-data2D.html">Hemibrain</a>
+</li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div class="fluid-row" id="header">
+
+
+
+<h1 class="title toc-ignore">Working with CATMAID(FAFB) Data</h1>
+
+</div>
+
+
+<p>The main natverse tools that exist for working with FAFB data are <a href="https://jefferislab.github.io/catnat/reference/index.html">catnat</a>, <a href="http://natverse.org/rcatmaid/reference/index.html">rcatmaid</a>, and [elmr] <a href="http://natverse.org/elmr/index.html" class="uri">http://natverse.org/elmr/index.html</a></p>
+<p>To access v14 FAFB data using R, you first need to establish a catmaid connection</p>
+<pre class="r"><code>catmaid_login(server=&quot;https://neuropil.janelia.org/tracing/fafb/v14/&quot;,authname=&#39;fly&#39;,authpassword=&#39;superfly&#39;,token=&quot;yourtokenhere&quot;)</code></pre>
+<p><font size=5> Fetch Neurons from FAFB </font></p>
+<p>Provide the skeleton ID of the desired neuron in v14 to fetch the skeleton and read it as a neuron object</p>
+<pre class="r"><code>DNa02=read.neurons.catmaid(12526673)
+open3d(userMatrix=rotationMatrix,windowRect=windowRect,zoom=0.33)
+plot3d(DNa02,soma=TRUE,lwd=2,col=&#39;black&#39;,WithNodes=FALSE)
+plot3d(FAFB)</code></pre>
+<p><img src="images/A2_FAFB.png"/></p>
+<p><font size=5> Compare with neurons in other brain spaces</font></p>
+<p>Skeletons fetched from v14 are registered to the template brain called <b>FAFB</b>. To compare with neurons in other brain spaces, these neuron objects can be transformed using <b>xform_brain</b>. For example, here a neuron traced from a ligh-level image(in blue) is compared with a skeleton fetched from FAFB(in black).</p>
+<pre class="r"><code>Namiki_tracing_1 &lt;-read.neuron(&#39;data/Namiki_tracing_registered.swc&#39;)
+Namiki_tracing_FCWB&lt;-xform_brain(Namiki_tracing_1,sample=JFRC2013,reference=FCWB)</code></pre>
+<pre class="r"><code>#transform neuron into FCWB template brain space 
+A2_EM_FCWB&lt;- xform_brain(DNa02,sample=FAFB, reference = FCWB)
+
+#plot together with light-level tracing
+open3d(userMatrix=rotationMatrix,windowRect=windowRect,zoom=0.33)
+plot3d(A2_EM_FCWB,lwd=2,col=&quot;black&quot;,WithNodes=FALSE)
+plot3d(Namiki_tracing_FCWB,lwd=2,col=&quot;blue&quot;,WithNodes=FALSE)
+plot3d(FCWB)</code></pre>
+<p><img src="images/A2_FCWB.png"/></p>
+<p><font size=5> Find synapses</font></p>
+<p>To get the locations of synapses made by your neuron of interest, use <a href="https://jefferislab.github.io/catnat/reference/get.synapses.html">get_synapses</a>:</p>
+<pre class="r"><code>DNa02_presynapses=get.synapses(DNa02,target=c(&quot;PRE&quot;))
+DNa02_postsynapses=get.synapses(DNa02,target=c(&quot;POST&quot;))
+
+#plot synapse locations with neuron 
+open3d(userMatrix=rotationMatrix,windowRect=windowRect,zoom=0.33)
+plot3d(DNa02,lwd=2,col=&#39;black&#39;,withNodes=FALSE,soma = TRUE)
+points3d(DNa02_presynapses, col = &quot;red&quot;, lwd = 10)
+points3d(DNa02_postsynapses, col = &quot;blue&quot;, lwd = 2)
+plot3d(FAFB)</code></pre>
+<p><img src="images/A2_synapses.png"/></p>
+<p>Synapses can be grouped based on brain region using <a href="https://jefferislab.github.io/catnat/reference/inside_neuropils.html">inside_neuropils</a></p>
+<pre class="r"><code>DNa02=read.neurons.catmaid(12526673)</code></pre>
+<div id="unnamed_chunk_5div" class="rglWebGL">
+
+</div>
+<script type="text/javascript">
+var unnamed_chunk_5div = document.getElementById("unnamed_chunk_5div"),
+unnamed_chunk_5rgl = new rglwidgetClass();
+unnamed_chunk_5div.width = 673;
+unnamed_chunk_5div.height = 481;
+unnamed_chunk_5rgl.initialize(unnamed_chunk_5div,
+{"material":{"color":"#000000","alpha":1,"lit":true,"ambient":"#000000","specular":"#FFFFFF","emission":"#000000","shininess":50,"smooth":true,"front":"filled","back":"filled","size":3,"lwd":1,"fog":false,"point_antialias":false,"line_antialias":false,"texture":null,"textype":"rgb","texmipmap":false,"texminfilter":"linear","texmagfilter":"linear","texenvmap":false,"depth_mask":true,"depth_test":"less","isTransparent":false,"polygon_offset":[0,0]},"rootSubscene":2838,"objects":{"2842":{"id":2842,"reuse":"unnamed_chunk_25div"},"2841":{"id":2841,"reuse":"unnamed_chunk_25div"},"2843":{"id":2843,"reuse":"unnamed_chunk_25div"},"2838":{"id":2838,"type":"subscene","par3d":{"antialias":8,"FOV":30,"ignoreExtent":false,"listeners":2838,"mouseMode":{"left":"trackball","right":"zoom","middle":"fov","wheel":"pull"},"observer":[0,0,3.863703],"modelMatrix":[[1,0,0,0],[0,-1,0,0],[0,0,-1,-3.863703],[0,0,0,1]],"projMatrix":[[3.808215,0,0,0],[0,5.331501,0,0],[0,0,-3.863703,-13.9282],[0,0,-1,0]],"skipRedraw":false,"userMatrix":[[1,0,0,0],[0,-1,0,0],[0,0,-1,0],[0,0,0,1]],"userProjection":[[1,0,0,0],[0,1,0,0],[0,0,1,0],[0,0,0,1]],"scale":[1,1,1],"viewport":{"x":0,"y":0,"width":1,"height":1},"zoom":0.7,"bbox":[3.402823e+038,-3.402823e+038,3.402823e+038,-3.402823e+038,3.402823e+038,-3.402823e+038],"windowRect":[100,100,772,580],"family":"sans","font":1,"cex":1,"useFreeType":false,"fontname":"TT Arial","maxClipPlanes":8,"glVersion":4.6,"activeSubscene":0},"embeddings":{"viewport":"replace","projection":"replace","model":"replace","mouse":"replace"},"objects":[2843,2842],"subscenes":[],"flags":512}},"snapshot":"data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAqAAAAHgCAIAAAD17khjAAAAHXRFWHRTb2Z0d2FyZQBSL1JHTCBwYWNrYWdlL2xpYnBuZ7GveO8AAAecSURBVHic7dVBCQAwDMDA+jfdmhgMwp2C/DILAOTM7wAA4D2DB4AggweAIIMHgCCDB4AggweAIIMHgCCDB4AggweAIIMHgCCDB4AggweAIIMHgCCDB4AggweAIIMHgCCDB4AggweAIIMHgCCDB4AggweAIIMHgCCDB4AggweAIIMHgCCDB4AggweAIIMHgCCDB4AggweAIIMHgCCDB4AggweAIIMHgCCDB4AggweAIIMHgCCDB4AggweAIIMHgCCDB4AggweAIIMHgCCDB4AggweAIIMHgCCDB4AggweAIIMHgCCDB4AggweAIIMHgCCDB4AggweAIIMHgCCDB4AggweAIIMHgCCDB4AggweAIIMHgCCDB4AggweAIIMHgCCDB4AggweAIIMHgCCDB4AggweAIIMHgCCDB4AggweAIIMHgCCDB4AggweAIIMHgCCDB4AggweAIIMHgCCDB4AggweAIIMHgCCDB4AggweAIIMHgCCDB4AggweAIIMHgCCDB4AggweAIIMHgCCDB4AggweAIIMHgCCDB4AggweAIIMHgCCDB4AggweAIIMHgCCDB4AggweAIIMHgCCDB4AggweAIIMHgCCDB4AggweAIIMHgCCDB4AggweAIIMHgCCDB4AggweAIIMHgCCDB4AggweAIIMHgCCDB4AggweAIIMHgCCDB4AggweAIIMHgCCDB4AggweAIIMHgCCDB4AggweAIIMHgCCDB4AggweAIIMHgCCDB4AggweAIIMHgCCDB4AggweAIIMHgCCDB4AggweAIIMHgCCDB4AggweAIIMHgCCDB4AggweAIIMHgCCDB4AggweAIIMHgCCDB4AggweAIIMHgCCDB4AggweAIIMHgCCDB4AggweAIIMHgCCDB4AggweAIIMHgCCDB4AggweAIIMHgCCDB4AggweAIIMHgCCDB4AggweAIIMHgCCDB4AggweAIIMHgCCDB4AggweAIIMHgCCDB4AggweAIIMHgCCDB4AggweAIIMHgCCDB4AggweAIIMHgCCDB4AggweAIIMHgCCDB4AggweAIIMHgCCDB4AggweAIIMHgCCDB4AggweAIIMHgCCDB4AggweAIIMHgCCDB4AggweAIIMHgCCDB4AggweAIIMHgCCDB4AggweAIIMHgCCDB4AggweAIIMHgCCDB4AggweAIIMHgCCDB4AggweAIIMHgCCDB4AggweAIIMHgCCDB4AggweAIIMHgCCDB4AggweAIIMHgCCDB4AggweAIIMHgCCDB4AggweAIIMHgCCDB4AggweAIIMHgCCDB4AggweAIIMHgCCDB4AggweAIIMHgCCDB4AggweAIIMHgCCDB4AggweAIIMHgCCDB4AggweAIIMHgCCDB4AggweAIIMHgCCDB4AggweAIIMHgCCDB4AggweAIIMHgCCDB4AggweAIIMHgCCDB4AggweAIIMHgCCDB4AggweAIIMHgCCDB4AggweAIIMHgCCDB4AggweAIIMHgCCDB4AggweAIIMHgCCDB4AggweAIIMHgCCDB4AggweAIIMHgCCDB4AggweAIIMHgCCDB4AggweAIIMHgCCDB4AggweAIIMHgCCDB4AggweAIIMHgCCDB4AggweAIIMHgCCDB4AggweAIIMHgCCDB4AggweAIIMHgCCDB4AggweAIIMHgCCDB4AggweAIIMHgCCDB4AggweAIIMHgCCDB4AggweAIIMHgCCDB4AggweAIIMHgCCDB4AggweAIIMHgCCDB4AggweAIIMHgCCDB4AggweAIIMHgCCDB4AggweAIIMHgCCDB4AggweAIIMHgCCDB4AggweAIIMHgCCDB4AggweAIIMHgCCDB4AggweAIIMHgCCDB4AggweAIIMHgCCDB4AggweAIIMHgCCDB4AggweAIIMHgCCDB4AggweAIIMHgCCDB4AggweAIIMHgCCDB4AggweAIIMHgCCDB4AggweAIIMHgCCDB4AggweAIIMHgCCDB4AggweAIIMHgCCDB4AggweAIIMHgCCDB4AggweAIIMHgCCDB4AggweAIIMHgCCDB4AggweAIIMHgCCDB4AggweAIIMHgCCDB4AggweAIIMHgCCDB4AggweAIIMHgCCDB4AggweAIIMHgCCDB4AggweAIIMHgCCDB4AggweAIIMHgCCDB4AggweAIIMHgCCDB4AggweAIIMHgCCDB4AggweAIIMHgCCDB4AggweAIIMHgCCDB4AggweAIIMHgCCDB4AggweAIIMHgCCDB4AggweAIIMHgCCDB4AggweAIIMHgCCDB4AggweAIIMHgCCDB4AggweAIIMHgCCDB4AggweAIIMHgCCDB4AggweAIIMHgCCDB4AggweAIIMHgCCDB4AggweAIIMHgCCDB4AggweAIIMHgCCDB4AggweAIIMHgCCDB4AggweAIIMHgCCDB4AggweAIIMHgCCDB4AggweAIIMHgCCDB4AggweAIIMHgCCDB4AggweAIIMHgCCDB4AggweAIIMHgCCDB4AggweAIIMHgCCDB4AggweAIIMHgCCDB4AggweAIIMHgCCDB4CgA6dpGKtfMTX3AAAAAElFTkSuQmCC","width":673,"height":481,"sphereVerts":{"reuse":"lighttracingdiv"},"context":{"shiny":false,"rmarkdown":null},"crosstalk":{"key":[],"group":[],"id":[],"options":[]}});
+unnamed_chunk_5rgl.prefix = "unnamed_chunk_5";
+</script>
+<p id="unnamed_chunk_5debug">
+You must enable Javascript to view this page properly.
+</p>
+<script>unnamed_chunk_5rgl.start();</script>
+<p>First, grouping the presynaptic inputs by region, we get:</p>
+<pre class="r"><code>pre_neuropils = inside_neuropils(DNa02,brain = FAFB14NP.surf, &quot;PRE&quot;)
+pre_neuropils</code></pre>
+<pre><code>## $`12526673`
+##    AME_R     LO_R       NO     BU_R       PB     LH_R    LAL_R      SAD    CAN_R   AMMC_R    ICL_R    VES_R 
+##        0        0        0        0        0        0        0        0        0        0        0        0 
+##     IB_R    ATL_R    CRE_R MB_PED_R  MB_VL_R  MB_ML_R    FLA_R    LOP_R       EB     AL_R     ME_R       FB 
+##        0        0        0        0        0        0        0        0        0        0        0        0 
+##    SLP_R    SIP_R    SMP_R   AVLP_R   PVLP_R    WED_R    PLP_R   AOTU_R    GOR_R  MB_CA_R    SPS_R    IPS_R 
+##        0        0        0        0        0        0        0        0        0        0        0      206 
+##    SCL_R    EPA_R      GNG      PRW     GA_R    AME_L     LO_L     BU_L     LH_L    LAL_L    CAN_L   AMMC_L 
+##        0        0      127        0        0        0        0        0        0        0        0        0 
+##    ICL_L    VES_L     IB_L    ATL_L    CRE_L MB_PED_L  MB_VL_L  MB_ML_L    FLA_L    LOP_L     AL_L     ME_L 
+##        0        0        0        0        0        0        0        0        0        0        0        0 
+##    SLP_L    SIP_L    SMP_L   AVLP_L   PVLP_L    WED_L    PLP_L   AOTU_L    GOR_L  MB_CA_L    SPS_L    IPS_L 
+##        0        0        0        0        0        0        0        0        0        0        0        0 
+##    SCL_L    EPA_L     GA_L 
+##        0        0        0 
+## 
+## attr(,&quot;class&quot;)
+## [1] &quot;neuronlist&quot; &quot;list&quot;      
+## attr(,&quot;df&quot;)
+##          pid     skid     name
+## 12526673   1 12526673 DNa02_AL</code></pre>
+<p>Next,grouping the postsyanptic inputs by region, we get:</p>
+<pre class="r"><code>post_neuropils= inside_neuropils(DNa02,brain = FAFB14NP.surf, &quot;POST&quot;)
+post_neuropils</code></pre>
+<pre><code>## $`12526673`
+##    AME_R     LO_R       NO     BU_R       PB     LH_R    LAL_R      SAD    CAN_R   AMMC_R    ICL_R    VES_R 
+##        0        0        0        0        0        0     3209       12        0        0        7     1739 
+##     IB_R    ATL_R    CRE_R MB_PED_R  MB_VL_R  MB_ML_R    FLA_R    LOP_R       EB     AL_R     ME_R       FB 
+##        0        0       43        0        0        0        0        0        0        4        0        0 
+##    SLP_R    SIP_R    SMP_R   AVLP_R   PVLP_R    WED_R    PLP_R   AOTU_R    GOR_R  MB_CA_R    SPS_R    IPS_R 
+##        0        0        0       44       17      481       93        0        0        0     1956     2015 
+##    SCL_R    EPA_R      GNG      PRW     GA_R    AME_L     LO_L     BU_L     LH_L    LAL_L    CAN_L   AMMC_L 
+##        0      610     1017        0        0        0        0        0        0        0        0        0 
+##    ICL_L    VES_L     IB_L    ATL_L    CRE_L MB_PED_L  MB_VL_L  MB_ML_L    FLA_L    LOP_L     AL_L     ME_L 
+##        0        0        0        0        0        0        0        0        0        0        0        0 
+##    SLP_L    SIP_L    SMP_L   AVLP_L   PVLP_L    WED_L    PLP_L   AOTU_L    GOR_L  MB_CA_L    SPS_L    IPS_L 
+##        0        0        0        0        0        0        0        0        0        0        0        0 
+##    SCL_L    EPA_L     GA_L 
+##        0        0        0 
+## 
+## attr(,&quot;class&quot;)
+## [1] &quot;neuronlist&quot; &quot;list&quot;      
+## attr(,&quot;df&quot;)
+##          pid     skid     name
+## 12526673   1 12526673 DNa02_AL</code></pre>
+<p>Plotting the results of this analysis using a barplot</p>
+<pre class="r"><code>pre_neuropils_df=data.frame(names=names(pre_neuropils$`12526673`),counts=as.numeric(unlist(pre_neuropils)))
+pre_neuropils_df=subset(pre_neuropils_df,counts&gt;0)
+post_neuropils_df=data.frame(names=names(post_neuropils$`12526673`),counts=as.numeric(unlist(post_neuropils)))
+post_neuropils_df=subset(post_neuropils_df,counts&gt;6)
+all_neuropils_df=merge(post_neuropils_df,pre_neuropils_df,by=&#39;names&#39;,all=TRUE)
+all_neuropils_df.m=melt(all_neuropils_df, id.vars=&#39;names&#39;)
+all_neuropils_df.m=all_neuropils_df.m[order(-all_neuropils_df.m$value),]
+all_neuropils_df.m$Groups &lt;- factor(all_neuropils_df.m$names, levels = all_neuropils_df[order(all_neuropils_df$counts.x),]$names)
+ggplot(all_neuropils_df.m,aes(fill=variable,x=Groups,y=value))+geom_bar(stat=&quot;identity&quot;)+
+  coord_flip()+theme_bw()+scale_x_discrete(name =&quot;Region&quot;)+ ylab(&#39;Synapse Count&#39;)+theme(legend.position=&quot;none&quot;)+scale_fill_manual(values=c(&quot;blue&quot;,&quot;red&quot;))
+ggsave(&#39;images/A2_connections_grouped.png&#39;,device=&#39;png&#39;)</code></pre>
+<p><img src="images/A2_connections_grouped.png"/></p>
+<p><font size=5> Get synaptic partners</font></p>
+<p>We can also fetch the skeletons of the synaptic partners</p>
+<pre class="r"><code>synaptic_partners=catmaid_query_connected(12526673)
+presynaptic_partners=read.neurons.catmaid(synaptic_partners$incoming[&#39;partner&#39;][,],OmitFailures = T)
+postsynaptic_partners=read.neurons.catmaid(synaptic_partners$outgoing[&#39;partner&#39;][,],OmitFailures = T)</code></pre>
+<p>Plot <span style="color:red"> presynaptic partners </span></p>
+<pre class="r"><code>open3d(userMatrix=rotationMatrix,windowRect=windowRect,zoom=0.6)
+plot3d(presynaptic_partners,col=&#39;red&#39;,lwd=1,soma=TRUE)
+plot3d(FAFB)</code></pre>
+<p><img src="images/A2_presynapses.png"/></p>
+<p>Plot <span style="color:blue"> postsynaptic partners </span></p>
+<pre class="r"><code>open3d(userMatrix=rotationMatrix,windowRect=windowRect,zoom=0.6)
+plot3d(postsynaptic_partners,col=&#39;blue&#39;,lwd=1,soma=TRUE)
+plot3d(FAFB)</code></pre>
+<p><img src="images/A2_postsynapses.png"/></p>
+<p><font size=5> Evaluate neuron connectivity </font></p>
+<p>In this example, we evaluate the connectivity between two classes of neurons and plot the resutls as a heatmap. In this visualization, the values are synaptic weights and row and column names are neuron names from CATMAID</p>
+<pre class="r"><code>#read in first class of neurons 
+PFL3_neuron_ids=c(12526784,12526732,12526393,12526785,12526661,12526663,12526731,12526733,
+                  12526734,12526735,12526738,12526894)
+PFL_3_neurons=read.neurons.catmaid(PFL3_neuron_ids)
+
+#read in second class of neurons 
+DN_neuron_ids=c(12526591,12526791)
+DN_neurons=read.neurons.catmaid(DN_neuron_ids)
+
+#generate connectivity matrix 
+connectivity_matrix=skeleton_connectivity_matrix(PFL_3_neurons,DN_neurons)
+neuron.heatmap(connectivity_matrix)</code></pre>
+<p><img src="images/PFL3_DN_connectivity_heatmap.png"/></p>
+<p><font size=5> Find the number of synapses per connection </font></p>
+<p>Each synaptic connection has a unique <b>connector_id</b>. Here, we find all incoming and outgoing partners of our neuron of interest, and list the partners with the greatest numbers of synaptic connections. The top incoming partners(red), the top outgoing partners(blue), and our neuron of interest(black) are plotted below.</p>
+<pre class="r"><code>#get all connections 
+connector_table=data.table(catmaid_get_connector_table(12526673))
+
+#count the number of connections for synaptic partner 
+incoming_connector_counts=connector_table[connector_table$direction==&#39;incoming&#39;][, .N, by=.(partner_skid)]
+outgoing_connector_counts=connector_table[connector_table$direction==&#39;outgoing&#39;][, .N, by=.(partner_skid)]
+
+#display the 10 synaptic partners with the greatest number of conections 
+incoming_connector_counts[order(-N)][1:10]</code></pre>
+<pre><code>##     partner_skid   N
+##  1:     12526713 198
+##  2:     12526591 183
+##  3:     12526874 134
+##  4:     12526769 133
+##  5:     12526791 129
+##  6:     12526705 112
+##  7:     12526457 107
+##  8:     12529370  98
+##  9:     12526632  98
+## 10:     12526809  97</code></pre>
+<pre class="r"><code>outgoing_connector_counts[order(-N)][1:10]</code></pre>
+<pre><code>##     partner_skid  N
+##  1:      2936868 13
+##  2:     12529510 13
+##  3:       951945 12
+##  4:     12526605 12
+##  5:     12529115 11
+##  6:     12529414 11
+##  7:     12529249 10
+##  8:      7873498  9
+##  9:      3752689  9
+## 10:     12529405  8</code></pre>
+<div id="unnamed_chunk_13div" class="rglWebGL">
+
+</div>
+<script type="text/javascript">
+var unnamed_chunk_13div = document.getElementById("unnamed_chunk_13div"),
+unnamed_chunk_13rgl = new rglwidgetClass();
+unnamed_chunk_13div.width = 673;
+unnamed_chunk_13div.height = 481;
+unnamed_chunk_13rgl.initialize(unnamed_chunk_13div,
+{"material":{"color":"#000000","alpha":1,"lit":true,"ambient":"#000000","specular":"#FFFFFF","emission":"#000000","shininess":50,"smooth":true,"front":"filled","back":"filled","size":3,"lwd":1,"fog":false,"point_antialias":false,"line_antialias":false,"texture":null,"textype":"rgb","texmipmap":false,"texminfilter":"linear","texmagfilter":"linear","texenvmap":false,"depth_mask":true,"depth_test":"less","isTransparent":false,"polygon_offset":[0,0]},"rootSubscene":2838,"objects":{"2842":{"id":2842,"reuse":"unnamed_chunk_25div"},"2841":{"id":2841,"reuse":"unnamed_chunk_25div"},"2843":{"id":2843,"reuse":"unnamed_chunk_25div"},"2838":{"id":2838,"type":"subscene","par3d":{"antialias":8,"FOV":30,"ignoreExtent":false,"listeners":2838,"mouseMode":{"left":"trackball","right":"zoom","middle":"fov","wheel":"pull"},"observer":[0,0,3.863703],"modelMatrix":[[1,0,0,0],[0,-1,0,0],[0,0,-1,-3.863703],[0,0,0,1]],"projMatrix":[[3.808215,0,0,0],[0,5.331501,0,0],[0,0,-3.863703,-13.9282],[0,0,-1,0]],"skipRedraw":false,"userMatrix":[[1,0,0,0],[0,-1,0,0],[0,0,-1,0],[0,0,0,1]],"userProjection":[[1,0,0,0],[0,1,0,0],[0,0,1,0],[0,0,0,1]],"scale":[1,1,1],"viewport":{"x":0,"y":0,"width":1,"height":1},"zoom":0.7,"bbox":[3.402823e+038,-3.402823e+038,3.402823e+038,-3.402823e+038,3.402823e+038,-3.402823e+038],"windowRect":[100,100,772,580],"family":"sans","font":1,"cex":1,"useFreeType":false,"fontname":"TT Arial","maxClipPlanes":8,"glVersion":4.6,"activeSubscene":0},"embeddings":{"viewport":"replace","projection":"replace","model":"replace","mouse":"replace"},"objects":[2843,2842],"subscenes":[],"flags":512}},"snapshot":"data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAqAAAAHgCAIAAAD17khjAAAAHXRFWHRTb2Z0d2FyZQBSL1JHTCBwYWNrYWdlL2xpYnBuZ7GveO8AAAecSURBVHic7dVBCQAwDMDA+jfdmhgMwp2C/DILAOTM7wAA4D2DB4AggweAIIMHgCCDB4AggweAIIMHgCCDB4AggweAIIMHgCCDB4AggweAIIMHgCCDB4AggweAIIMHgCCDB4AggweAIIMHgCCDB4AggweAIIMHgCCDB4AggweAIIMHgCCDB4AggweAIIMHgCCDB4AggweAIIMHgCCDB4AggweAIIMHgCCDB4AggweAIIMHgCCDB4AggweAIIMHgCCDB4AggweAIIMHgCCDB4AggweAIIMHgCCDB4AggweAIIMHgCCDB4AggweAIIMHgCCDB4AggweAIIMHgCCDB4AggweAIIMHgCCDB4AggweAIIMHgCCDB4AggweAIIMHgCCDB4AggweAIIMHgCCDB4AggweAIIMHgCCDB4AggweAIIMHgCCDB4AggweAIIMHgCCDB4AggweAIIMHgCCDB4AggweAIIMHgCCDB4AggweAIIMHgCCDB4AggweAIIMHgCCDB4AggweAIIMHgCCDB4AggweAIIMHgCCDB4AggweAIIMHgCCDB4AggweAIIMHgCCDB4AggweAIIMHgCCDB4AggweAIIMHgCCDB4AggweAIIMHgCCDB4AggweAIIMHgCCDB4AggweAIIMHgCCDB4AggweAIIMHgCCDB4AggweAIIMHgCCDB4AggweAIIMHgCCDB4AggweAIIMHgCCDB4AggweAIIMHgCCDB4AggweAIIMHgCCDB4AggweAIIMHgCCDB4AggweAIIMHgCCDB4AggweAIIMHgCCDB4AggweAIIMHgCCDB4AggweAIIMHgCCDB4AggweAIIMHgCCDB4AggweAIIMHgCCDB4AggweAIIMHgCCDB4AggweAIIMHgCCDB4AggweAIIMHgCCDB4AggweAIIMHgCCDB4AggweAIIMHgCCDB4AggweAIIMHgCCDB4AggweAIIMHgCCDB4AggweAIIMHgCCDB4AggweAIIMHgCCDB4AggweAIIMHgCCDB4AggweAIIMHgCCDB4AggweAIIMHgCCDB4AggweAIIMHgCCDB4AggweAIIMHgCCDB4AggweAIIMHgCCDB4AggweAIIMHgCCDB4AggweAIIMHgCCDB4AggweAIIMHgCCDB4AggweAIIMHgCCDB4AggweAIIMHgCCDB4AggweAIIMHgCCDB4AggweAIIMHgCCDB4AggweAIIMHgCCDB4AggweAIIMHgCCDB4AggweAIIMHgCCDB4AggweAIIMHgCCDB4AggweAIIMHgCCDB4AggweAIIMHgCCDB4AggweAIIMHgCCDB4AggweAIIMHgCCDB4AggweAIIMHgCCDB4AggweAIIMHgCCDB4AggweAIIMHgCCDB4AggweAIIMHgCCDB4AggweAIIMHgCCDB4AggweAIIMHgCCDB4AggweAIIMHgCCDB4AggweAIIMHgCCDB4AggweAIIMHgCCDB4AggweAIIMHgCCDB4AggweAIIMHgCCDB4AggweAIIMHgCCDB4AggweAIIMHgCCDB4AggweAIIMHgCCDB4AggweAIIMHgCCDB4AggweAIIMHgCCDB4AggweAIIMHgCCDB4AggweAIIMHgCCDB4AggweAIIMHgCCDB4AggweAIIMHgCCDB4AggweAIIMHgCCDB4AggweAIIMHgCCDB4AggweAIIMHgCCDB4AggweAIIMHgCCDB4AggweAIIMHgCCDB4AggweAIIMHgCCDB4AggweAIIMHgCCDB4AggweAIIMHgCCDB4AggweAIIMHgCCDB4AggweAIIMHgCCDB4AggweAIIMHgCCDB4AggweAIIMHgCCDB4AggweAIIMHgCCDB4AggweAIIMHgCCDB4AggweAIIMHgCCDB4AggweAIIMHgCCDB4AggweAIIMHgCCDB4AggweAIIMHgCCDB4AggweAIIMHgCCDB4AggweAIIMHgCCDB4AggweAIIMHgCCDB4AggweAIIMHgCCDB4AggweAIIMHgCCDB4AggweAIIMHgCCDB4AggweAIIMHgCCDB4AggweAIIMHgCCDB4AggweAIIMHgCCDB4AggweAIIMHgCCDB4AggweAIIMHgCCDB4AggweAIIMHgCCDB4AggweAIIMHgCCDB4AggweAIIMHgCCDB4AggweAIIMHgCCDB4AggweAIIMHgCCDB4AggweAIIMHgCCDB4AggweAIIMHgCCDB4AggweAIIMHgCCDB4AggweAIIMHgCCDB4AggweAIIMHgCCDB4AggweAIIMHgCCDB4AggweAIIMHgCCDB4AggweAIIMHgCCDB4AggweAIIMHgCCDB4AggweAIIMHgCCDB4AggweAIIMHgCCDB4AggweAIIMHgCCDB4AggweAIIMHgCCDB4AggweAIIMHgCCDB4AggweAIIMHgCCDB4AggweAIIMHgCCDB4AggweAIIMHgCCDB4AggweAIIMHgCCDB4AggweAIIMHgCCDB4AggweAIIMHgCCDB4AggweAIIMHgCCDB4AggweAIIMHgCCDB4AggweAIIMHgCCDB4AggweAIIMHgCCDB4CgA6dpGKtfMTX3AAAAAElFTkSuQmCC","width":673,"height":481,"sphereVerts":{"reuse":"lighttracingdiv"},"context":{"shiny":false,"rmarkdown":null},"crosstalk":{"key":[],"group":[],"id":[],"options":[]}});
+unnamed_chunk_13rgl.prefix = "unnamed_chunk_13";
+</script>
+<p id="unnamed_chunk_13debug">
+You must enable Javascript to view this page properly.
+</p>
+<script>unnamed_chunk_13rgl.start();</script>
+
+
+
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.header').parent('thead').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- tabsets -->
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open')
+  });
+});
+</script>
+
+<!-- code folding -->
+
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

@@ -1,0 +1,549 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+
+
+
+<title>Working with Hemibrain Data</title>
+
+<script src="site_libs/jquery-1.11.3/jquery.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="site_libs/bootstrap-3.3.5/css/bootstrap.min.css" rel="stylesheet" />
+<script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<script src="site_libs/navigation-1.1/tabsets.js"></script>
+<link href="site_libs/highlightjs-9.12.0/default.css" rel="stylesheet" />
+<script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
+
+<style type="text/css">code{white-space: pre;}</style>
+<style type="text/css">
+  pre:not([class]) {
+    background-color: white;
+  }
+</style>
+<script type="text/javascript">
+if (window.hljs) {
+  hljs.configure({languages: []});
+  hljs.initHighlightingOnLoad();
+  if (document.readyState && document.readyState === "complete") {
+    window.setTimeout(function() { hljs.initHighlighting(); }, 0);
+  }
+}
+</script>
+
+
+
+<style type="text/css">
+h1 {
+  font-size: 34px;
+}
+h1.title {
+  font-size: 38px;
+}
+h2 {
+  font-size: 30px;
+}
+h3 {
+  font-size: 24px;
+}
+h4 {
+  font-size: 18px;
+}
+h5 {
+  font-size: 16px;
+}
+h6 {
+  font-size: 12px;
+}
+.table th:not([align]) {
+  text-align: left;
+}
+</style>
+
+
+
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+code {
+  color: inherit;
+  background-color: rgba(0, 0, 0, 0.04);
+}
+img {
+  max-width:100%;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+summary {
+  display: list-item;
+}
+</style>
+
+
+<style type="text/css">
+/* padding for bootstrap navbar */
+body {
+  padding-top: 51px;
+  padding-bottom: 40px;
+}
+/* offset scroll position for anchor links (for fixed navbar)  */
+.section h1 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h2 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h3 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h4 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h5 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h6 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.dropdown-submenu {
+  position: relative;
+}
+.dropdown-submenu>.dropdown-menu {
+  top: 0;
+  left: 100%;
+  margin-top: -6px;
+  margin-left: -1px;
+  border-radius: 0 6px 6px 6px;
+}
+.dropdown-submenu:hover>.dropdown-menu {
+  display: block;
+}
+.dropdown-submenu>a:after {
+  display: block;
+  content: " ";
+  float: right;
+  width: 0;
+  height: 0;
+  border-color: transparent;
+  border-style: solid;
+  border-width: 5px 0 5px 5px;
+  border-left-color: #cccccc;
+  margin-top: 5px;
+  margin-right: -10px;
+}
+.dropdown-submenu:hover>a:after {
+  border-left-color: #ffffff;
+}
+.dropdown-submenu.pull-left {
+  float: none;
+}
+.dropdown-submenu.pull-left>.dropdown-menu {
+  left: -100%;
+  margin-left: 10px;
+  border-radius: 6px 0 6px 6px;
+}
+</style>
+
+<script>
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark it active
+  menuAnchor.parent().addClass('active');
+
+  // if it's got a parent navbar menu mark it active as well
+  menuAnchor.closest('li.dropdown').addClass('active');
+});
+</script>
+
+<!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  background: white;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "&#xe258;";
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+  background-color: transparent;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
+<!-- code folding -->
+
+
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
+
+
+
+
+<div class="navbar navbar-default  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">Neuroanatomy Toolbox (nat) guide </a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li>
+  <a href="index.html">Home</a>
+</li>
+<li>
+  <a href="basic-nat-functions.html">Basic Nat Funcions</a>
+</li>
+<li>
+  <a href="nblast.html">NBLAST</a>
+</li>
+<li>
+  <a href="working-with-CATMAID-data2D.html">CATMAID</a>
+</li>
+<li>
+  <a href="working-with-hemibrain-data2D.html">Hemibrain</a>
+</li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div class="fluid-row" id="header">
+
+
+
+<h1 class="title toc-ignore">Working with Hemibrain Data</h1>
+
+</div>
+
+
+<p>Data from the Janelia hemibrain release is available at: <a href="https://neuprint.janelia.org/?dataset=hemibrain:v1.0.1&amp;qt=findneurons" class="uri">https://neuprint.janelia.org/?dataset=hemibrain:v1.0.1&amp;qt=findneurons</a> The package <a href="http://natverse.org/neuprintr/reference/index.html">neuprintr</a> can be used to work with this data in R</p>
+<p><font size=5> Fetch Hemibrain Skeletons </font></p>
+<p>To access hemibrain data using R, you first have to login to the neuPrint server using the <a href="http://natverse.org/neuprintr/reference/neuprint_login.html">neuprint_login</a> function. Find your token at <a href="https://neuprint.janelia.org/account\" class="uri">https://neuprint.janelia.org/account\</a></p>
+<pre class="r"><code>conn = neuprint_login(server= &quot;https://neuprint.janelia.org/&quot;,
+                      token= &quot;yourtokenhere&quot;)</code></pre>
+<p>There are many ways to find a neuron, including by name, bodyid, or ROI innervation. Here, we find all hemibrain neurons with names matching ‘R1’</p>
+<pre class="r"><code>R1.info = neuprint_search(&quot;R1_.*&quot;)
+R1.info</code></pre>
+<pre><code>##        bodyid pre post status    statusLabel cropped                name type cellBodyFiber    voxels  soma
+## 1  1322133296 210  431 Traced Roughly traced   FALSE R1_a(ring)(AVM07)_L R1_a          &lt;NA&gt; 235493563 FALSE
+## 2  1291103485 189  368 Traced Roughly traced   FALSE R1_a(ring)(AVM07)_L R1_a          &lt;NA&gt; 224315155 FALSE
+## 3  1322133768 193  396 Traced Roughly traced   FALSE R1_a(ring)(AVM07)_L R1_a          &lt;NA&gt; 226333093 FALSE
+## 4  1291444314 215  502 Traced Roughly traced   FALSE R1_a(ring)(AVM07)_L R1_a          &lt;NA&gt; 283604137 FALSE
+## 5  1352823209 207  466 Traced Roughly traced   FALSE R1_a(ring)(AVM07)_L R1_a          &lt;NA&gt; 268498123 FALSE
+## 6  1322129437 212  388 Traced Roughly traced   FALSE R1_a(ring)(AVM07)_L R1_a          &lt;NA&gt; 232923461 FALSE
+## 7  1322133825 195  351 Traced Roughly traced   FALSE R1_a(ring)(AVM07)_L R1_a          &lt;NA&gt; 222327266 FALSE
+## 8  5813059835 217  459 Traced Roughly traced   FALSE R1_a(ring)(AVM07)_L R1_a          &lt;NA&gt; 220977241 FALSE
+## 9  1294414279 214  758 Traced         Traced   FALSE R1_a(ring)(AVM07)_R R1_a          igL2 494221314  TRUE
+## 10 1291435551 214  633 Traced         Traced   FALSE R1_a(ring)(AVM07)_R R1_a          igL2 442178292  TRUE
+## 11 1322129781 178  560 Traced         Traced   FALSE R1_a(ring)(AVM07)_R R1_a          igL2 406452064  TRUE
+## 12 1355806197 203  599 Traced         Traced   FALSE R1_a(ring)(AVM07)_R R1_a          igL2 432301213  TRUE
+## 13 1322133858 200  567 Traced         Traced   FALSE R1_a(ring)(AVM07)_R R1_a          igL2 392021268  TRUE
+## 14 1322470462 212  631 Traced         Traced   FALSE R1_a(ring)(AVM07)_R R1_a          igL2 459817081  TRUE
+## 15 1322470368 211  703 Traced         Traced   FALSE R1_a(ring)(AVM07)_R R1_a          igL2 507360636  TRUE
+## 16 1322466938 215  712 Traced         Traced   FALSE R1_a(ring)(AVM07)_R R1_a          igL2 446424902  TRUE
+## 17 1291094742 233  571 Traced Roughly traced   FALSE R1_b(ring)(AVM07)_L R1_b          &lt;NA&gt; 275733636 FALSE
+## 18 1322129724 201  482 Traced Roughly traced   FALSE R1_b(ring)(AVM07)_L R1_b          &lt;NA&gt; 244179816 FALSE
+## 19 1322133531 189  468 Traced Roughly traced   FALSE R1_b(ring)(AVM07)_L R1_b          &lt;NA&gt; 234032804 FALSE
+## 20 1322129730 202  509 Traced Roughly traced   FALSE R1_b(ring)(AVM07)_L R1_b          &lt;NA&gt; 234533589 FALSE
+## 21 1322133891 203  499 Traced Roughly traced   FALSE R1_b(ring)(AVM07)_L R1_b          &lt;NA&gt; 281711914 FALSE
+## 22 1322142804  88  158 Traced Roughly traced   FALSE R1_b(ring)(AVM07)_L R1_b          &lt;NA&gt; 103617394 FALSE
+## 23 1353168228  82  211 Traced Roughly traced   FALSE R1_b(ring)(AVM07)_L R1_b          &lt;NA&gt; 104693827 FALSE
+## 24 1322137688 199  753 Traced         Traced   FALSE R1_b(ring)(AVM07)_R R1_b          igL2 428829246  TRUE
+## 25 1294082002 250  793 Traced         Traced   FALSE R1_b(ring)(AVM07)_R R1_b          igL2 515920224  TRUE
+## 26 1291094620 240  762 Traced         Traced   FALSE R1_b(ring)(AVM07)_R R1_b          igL2 511574757  TRUE
+## 27 1291099014 211  796 Traced         Traced   FALSE R1_b(ring)(AVM07)_R R1_b          igL2 484088216  TRUE
+## 28 1291435693 242  821 Traced         Traced   FALSE R1_b(ring)(AVM07)_R R1_b          igL2 512326322  TRUE
+## 29 1322138079 216  669 Traced         Traced   FALSE R1_b(ring)(AVM07)_R R1_b          igL2 455658404  TRUE
+## 30 1322129610 218  778 Traced         Traced   FALSE R1_b(ring)(AVM07)_R R1_b          igL2 451779426  TRUE</code></pre>
+<pre class="r"><code>#read in the skeletons as neurons 
+R1_neurons = neuprint_read_neurons(R1.info$bodyid)
+open3d(userMatrix=hemibrainMatrix,windowRect=windowRect,zoom=0.7)
+plot3d(R1_neurons,lwd=2,WithNodes=FALSE,soma=TRUE)</code></pre>
+<p><img src="images/R1_neurons.png"/></p>
+<p><font size=5> Fetch brain regions </font></p>
+<p>You can see a list of all available brain region meshes using the following command(*Note: not all of these meshes are currently available for download):</p>
+<pre class="r"><code>neuprint_ROIs()</code></pre>
+<pre><code>##   [1] &quot;a&#39;1(R)&quot;            &quot;a&#39;2(R)&quot;            &quot;a&#39;3(R)&quot;            &quot;a&#39;L(L)&quot;            &quot;a&#39;L(R)&quot;           
+##   [6] &quot;a1(R)&quot;             &quot;a2(R)&quot;             &quot;a3(R)&quot;             &quot;AB(L)&quot;             &quot;AB(R)&quot;            
+##  [11] &quot;aL(L)&quot;             &quot;AL(L)&quot;             &quot;aL(R)&quot;             &quot;AL(R)&quot;             &quot;AME(R)&quot;           
+##  [16] &quot;AMMC&quot;              &quot;AOT(R)&quot;            &quot;AOTU(R)&quot;           &quot;ATL(L)&quot;            &quot;ATL(R)&quot;           
+##  [21] &quot;AVLP(R)&quot;           &quot;b&#39;1(R)&quot;            &quot;b&#39;2(R)&quot;            &quot;b&#39;L(L)&quot;            &quot;b&#39;L(R)&quot;           
+##  [26] &quot;b1(R)&quot;             &quot;b2(R)&quot;             &quot;bL(L)&quot;             &quot;bL(R)&quot;             &quot;BU(L)&quot;            
+##  [31] &quot;BU(R)&quot;             &quot;CA(L)&quot;             &quot;CA(R)&quot;             &quot;CAN(R)&quot;            &quot;CRE(-ROB,-RUB)(R)&quot;
+##  [36] &quot;CRE(L)&quot;            &quot;CRE(R)&quot;            &quot;CX&quot;                &quot;dACA(R)&quot;           &quot;EB&quot;               
+##  [41] &quot;EBr1&quot;              &quot;EBr2r4&quot;            &quot;EBr3am&quot;            &quot;EBr3d&quot;             &quot;EBr3pw&quot;           
+##  [46] &quot;EBr5&quot;              &quot;EBr6&quot;              &quot;EPA(L)&quot;            &quot;EPA(R)&quot;            &quot;FB&quot;               
+##  [51] &quot;FBl1&quot;              &quot;FBl2&quot;              &quot;FBl3&quot;              &quot;FBl4&quot;              &quot;FBl5&quot;             
+##  [56] &quot;FBl6&quot;              &quot;FBl7&quot;              &quot;FBl8&quot;              &quot;FBl9&quot;              &quot;FLA(R)&quot;           
+##  [61] &quot;g1(R)&quot;             &quot;g2(R)&quot;             &quot;g3(R)&quot;             &quot;g4(R)&quot;             &quot;g5(R)&quot;            
+##  [66] &quot;GA(R)&quot;             &quot;GC&quot;                &quot;GF(R)&quot;             &quot;gL(L)&quot;             &quot;gL(R)&quot;            
+##  [71] &quot;GNG&quot;               &quot;GOR(L)&quot;            &quot;GOR(R)&quot;            &quot;hemibrain&quot;         &quot;IB&quot;               
+##  [76] &quot;ICL(L)&quot;            &quot;ICL(R)&quot;            &quot;INP&quot;               &quot;IPS(R)&quot;            &quot;lACA(R)&quot;          
+##  [81] &quot;LAL(-GA)(R)&quot;       &quot;LAL(L)&quot;            &quot;LAL(R)&quot;            &quot;LH(R)&quot;             &quot;LO(R)&quot;            
+##  [86] &quot;LOP(R)&quot;            &quot;LX(L)&quot;             &quot;LX(R)&quot;             &quot;mALT(L)&quot;           &quot;mALT(R)&quot;          
+##  [91] &quot;MB(+ACA)(R)&quot;       &quot;MB(L)&quot;             &quot;MB(R)&quot;             &quot;ME(R)&quot;             &quot;NO&quot;               
+##  [96] &quot;NO(L)&quot;             &quot;NO(R)&quot;             &quot;NO1(L)&quot;            &quot;NO1(R)&quot;            &quot;NO2(L)&quot;           
+## [101] &quot;NO2(R)&quot;            &quot;NO3(L)&quot;            &quot;NO3(R)&quot;            &quot;OL(R)&quot;             &quot;PB&quot;               
+## [106] &quot;PB(L1)&quot;            &quot;PB(L2)&quot;            &quot;PB(L3)&quot;            &quot;PB(L4)&quot;            &quot;PB(L5)&quot;           
+## [111] &quot;PB(L6)&quot;            &quot;PB(L7)&quot;            &quot;PB(L8)&quot;            &quot;PB(L9)&quot;            &quot;PB(R1)&quot;           
+## [116] &quot;PB(R2)&quot;            &quot;PB(R3)&quot;            &quot;PB(R4)&quot;            &quot;PB(R5)&quot;            &quot;PB(R6)&quot;           
+## [121] &quot;PB(R7)&quot;            &quot;PB(R8)&quot;            &quot;PB(R9)&quot;            &quot;PED(R)&quot;            &quot;PENP&quot;             
+## [126] &quot;PLP(R)&quot;            &quot;POC&quot;               &quot;PRW&quot;               &quot;PVLP(R)&quot;           &quot;ROB(R)&quot;           
+## [131] &quot;RUB(L)&quot;            &quot;RUB(R)&quot;            &quot;SAD&quot;               &quot;SAD(-AMMC)&quot;        &quot;SCL(L)&quot;           
+## [136] &quot;SCL(R)&quot;            &quot;SIP(L)&quot;            &quot;SIP(R)&quot;            &quot;SLP(R)&quot;            &quot;SMP(L)&quot;           
+## [141] &quot;SMP(R)&quot;            &quot;SNP(L)&quot;            &quot;SNP(R)&quot;            &quot;SPS(L)&quot;            &quot;SPS(R)&quot;           
+## [146] &quot;vACA(R)&quot;           &quot;VES(L)&quot;            &quot;VES(R)&quot;            &quot;VLNP(R)&quot;           &quot;VMNP&quot;             
+## [151] &quot;WED(R)&quot;</code></pre>
+<p>To fetch these messages, use <a href="http://natverse.org/neuprintr/reference/neuprint_ROI_mesh.html">neuprint_ROI_mesh</a>:</p>
+<pre class="r"><code>#plot our neurons of interest 
+open3d(userMatrix=hemibrainMatrix,windowRect=windowRect,zoom=0.7)
+plot3d(R1_neurons,lwd=2,WithNodes=FALSE,soma=TRUE)
+
+#add EB and LAL meshes 
+EB=neuprint_ROI_mesh(roi = &quot;EB&quot;)
+plot3d(EB, add = TRUE, alpha = 0.1)
+LAL_R=neuprint_ROI_mesh(roi = &quot;LAL(R)&quot;)
+plot3d(LAL_R, add = TRUE, alpha = 0.1)</code></pre>
+<p><img src="images/R1_neurons_regions.png"/></p>
+<p><font size=5> Compare with neurons in other brain spaces</font></p>
+<p>The JRCFIB2018F template brain can be used to transform skeletons fetched from the hemibrain into other tempate brain spaces for comparisons with other neurons. To download the template brain and necessary registration files, run the following code (this takes a while but only needs to be done once).</p>
+<pre class="r"><code>remotes::install_github(&quot;natverse/nat.jrcbrains&quot;)
+nat.jrcbrains::download_saalfeldlab_registrations()</code></pre>
+<p>Then apply the transformations. In this example, the hemibrain data is being transformed into the FCWB template brain space so that it can be used to find similar flycircuit neurons or gal4 lines via nblast. *Note: <a href="https://www.oracle.com/java/technologies/javase-downloads.html">Java</a> and <a href="https://github.com/s-u/rJava">rJava</a> need to be installed in order to run the transformation:</p>
+<pre class="r"><code>#first transform into an intermediate brain space for which the transofrmation is defined 
+R1.jrc2018F = xform_brain(R1_neurons*8/1000, reference=&quot;JRC2018F&quot;, sample=&quot;JRCFIB2018F&quot;)
+
+#then transform into FCWB brain space 
+R1.fcwb = xform_brain(R1.jrc2018F, reference=&#39;FCWB&#39;, sample=&#39;JRC2018F&#39;)
+
+#plot neurons with fcwb template brain 
+open3d(userMatrix=rotationMatrix,windowRect=windowRect,zoom=0.6)
+plot3d(R1.fcwb,lwd=2,WithNodes=FALSE)
+plot3d(FCWB)</code></pre>
+<p><img src="images/R1_FCWB.png"/></p>
+<p><font size=5> Find synapse locations</font></p>
+<pre class="r"><code>R1_synapses=neuprint_get_synapses(R1.info$bodyid)
+
+open3d(userMatrix=hemibrainMatrix,windowRect=windowRect,zoom=0.7)
+plot3d(R1_neurons,col=&#39;black&#39;,lwd=2,WithNodes=FALSE,soma=TRUE)
+points3d(xyzmatrix(R1_synapses),col=&#39;red&#39;,lwd=2)</code></pre>
+<p><img src="images/R1_synapses.png"/></p>
+<p><font size=5> Get synaptic partners</font></p>
+<p>Finding all the <span style="color:red"> presynaptic partners of the R1 neurons</p>
+<pre class="r"><code>#get all inputs to R1 neurons 
+R1_all_inputs=unique(neuprint_connection_table(R1.info$bodyid,prepost=&#39;PRE&#39;)$partner)
+R1_all_inputs.neurons=neuprint_read_neurons(R1_all_inputs$bodyid)
+
+open3d(userMatrix=hemibrainMatrix,windowRect=windowRect,zoom=0.7)
+plot3d(R1_neurons,col=&#39;black&#39;,lwd=2,WithNodes=FALSE,soma=TRUE)
+plot3d(R1_all_inputs.neurons,col=&#39;red&#39;,lwd=2,WithNodes=FALSE,soma=TRUE)</code></pre>
+<p><img src="images/R1_all_input_neurons.png"/></p>
+<p>Finding all the <span style="color:blue"> postsyanptic partners of the R1 neurons</p>
+<pre class="r"><code>R1_all_outputs=unique(neuprint_connection_table(R1.info$bodyid,prepost=&#39;POST&#39;)$partner)
+R1_all_outputs.neurons=neuprint_read_neurons(R1_all_outputs)
+
+open3d(userMatrix=hemibrainMatrix,windowRect=windowRect,zoom=0.7)
+plot3d(R1_neurons,col=&#39;black&#39;,lwd=2,WithNodes=FALSE,soma=TRUE)
+plot3d(R1_all_outputs.neurons,col=&#39;blue&#39;,lwd=2,WithNodes=FALSE,soma=TRUE)</code></pre>
+<p><img src="images/R1_all_output_neurons.png"/></p>
+<p>Next,group these inptus and outputs by type</p>
+<pre class="r"><code>library(plyr)
+#group the inputs by type 
+R1_all_inputs_count=count(neuprint_get_meta(R1_all_inputs),&#39;type&#39;)
+R1_all_inputs_count=subset(R1_all_inputs_count,freq&gt;5)
+R1_all_inputs_count=subset(R1_all_inputs_count,type!=&#39;NA&#39;)
+
+#group the outputs by type 
+R1_all_outputs_count=count(neuprint_get_meta(R1_all_outputs),&#39;type&#39;)
+R1_all_outputs_count=subset(R1_all_outputs_count,freq&gt;5)
+R1_all_outputs_count=subset(R1_all_outputs_count,type!=&#39;NA&#39;)
+
+#aggregate data and plot as a bar graph 
+R1_all_partners=merge(R1_all_inputs_count,R1_all_outputs_count,by=&#39;type&#39;,all=TRUE)
+R1_all_partners.m=melt(R1_all_partners, id.vars=&#39;type&#39;)
+R1_all_partners.m=R1_all_partners.m[order(-R1_all_partners.m$value),]
+R1_all_partners.m$Groups &lt;- factor(R1_all_partners.m$type, levels = R1_all_partners[order(R1_all_partners$freq.x),]$type)
+plot&lt;-ggplot(R1_all_partners.m,aes(fill=variable,x=Groups,y=value))+geom_bar(stat=&quot;identity&quot;)+
+  coord_flip()+theme_bw()+scale_x_discrete(name =&quot;Region&quot;)+ ylab(&#39;Synapse Count&#39;)+theme(legend.position=&quot;none&quot;)+scale_fill_manual(values=c(&quot;blue&quot;,&quot;red&quot;))
+print(plot)</code></pre>
+<p><img src="images/R1_all_synapses_barplot.png"/></p>
+<p>We can also look only at the synaptic partners which are common to the set of all R1 neurons using neuprint_common_connectivity</p>
+<pre class="r"><code>R1_common_inputs=neuprint_common_connectivity(R1.info$bodyid,prepost=&#39;PRE&#39;)
+R1_common_inputs.neurons=neuprint_read_neurons(as.character(colnames(R1_common_inputs)))
+
+R1_common_outputs=neuprint_common_connectivity(R1.info$bodyid,prepost=&#39;POST&#39;)
+R1_common_outputs.neurons=neuprint_read_neurons(as.character(colnames(R1_common_outputs)))</code></pre>
+<pre class="r"><code>#plot common inputs and output 
+open3d(userMatrix=hemibrainMatrix,windowRect=windowRect,zoom=0.7)
+plot3d(R1_neurons,col=&#39;black&#39;,lwd=2,WithNodes=FALSE,soma=TRUE)
+plot3d(R1_common_inputs.neurons,col=&#39;red&#39;,lwd=2,WithNodes=FALSE,soma=TRUE)
+plot3d(R1_common_outputs.neurons,col=&#39;blue&#39;,lwd=2,WithNodes=FALSE,soma=TRUE)</code></pre>
+<p><img src="images/R1_common_partners.png"/></p>
+<p>Grouping these inputs and outputs by type, we get:</p>
+<pre class="r"><code>R1_common_inputs_df=neuprint_get_meta(as.character(colnames(R1_common_inputs)))
+
+R1_common_outputs_df=neuprint_get_meta(as.character(colnames(R1_common_outputs)))
+
+R1_input_type=count(R1_common_inputs_df,&#39;type&#39;)
+R1_output_type=count(R1_common_outputs_df,&#39;type&#39;)
+R1_common_partners=merge(R1_input_type,R1_output_type,by=&#39;type&#39;,all=TRUE)
+R1_common_partners.m=melt(R1_common_partners, id.vars=&#39;type&#39;)
+R1_common_partners.m=R1_common_partners.m[order(-R1_common_partners.m$value),]
+R1_common_partners.m$Groups &lt;- factor(R1_common_partners.m$type, levels = R1_common_partners[order(R1_common_partners$freq.y),]$type)
+R1_plot=ggplot(R1_common_partners.m,aes(fill=variable,x=Groups,y=value))+geom_bar(stat=&quot;identity&quot;)+ ggtitle(&#39;R1a common partners&#39;)+
+  coord_flip()+theme_bw()+scale_x_discrete(name =&quot;Neuron Type&quot;)+ ylab(&#39;# Connections&#39;)+theme(legend.position=&quot;none&quot;)+scale_fill_manual(values=c(&quot;blue&quot;,&quot;red&quot;))
+print(R1_plot)</code></pre>
+<p><img src="images/R1_common_partners_barplot.png"/></p>
+<p><font size=5> Evaluate neuron connectivity</font></p>
+<p>The neuprint_get_adjacency_matrix function can be used to generate an adjacency matrix between two sets of neurons. Here, we look at the connectivity between R1 and EPG neurons.</p>
+<pre class="r"><code>#find all EPG neurons 
+EPG.info=neuprint_search(&quot;.*EPG.*&quot;)
+EPG.info=subset(EPG.info,type==&#39;EPG&#39;)
+EPG_neurons=neuprint_read_neurons(EPG.info$bodyid)
+plot3d(EPG_neurons)
+
+#get adjacency matrix 
+#right now its adding both together- change so that rows are only R1, columns are only EPG 
+adj_mat=neuprint_get_adjacency_matrix(inputids=R1.info$bodyid,outputids=EPG.info$bodyid)
+
+#plot results as a heatmap
+rownames(adj_mat)=vector(mode=&#39;character&#39;,length=dim(adj_mat)[1])
+colnames(adj_mat)=vector(mode=&#39;character&#39;,length=dim(adj_mat)[2])
+Heatmap(adj_mat,row_title=&#39;R&#39;,column_title=&#39;EPG&#39;,show_row_dend=FALSE,
+        show_column_dend=FALSE,show_row_names=FALSE,show_column_names=FALSE,heatmap_legend_param=list(title=&#39;weight&#39;))</code></pre>
+<p><img src="images/R1_EPG_heatmap.png"/></p>
+
+
+
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.header').parent('thead').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- tabsets -->
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open')
+  });
+});
+</script>
+
+<!-- code folding -->
+
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>
