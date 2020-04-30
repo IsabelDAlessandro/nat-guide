@@ -1,0 +1,242 @@
+---
+title: " Working with CATMAID(FAFB) Data"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(knitr)
+library(rgl)
+knit_hooks$set(webgl = hook_webgl)
+source('nat-startup.R')
+```
+```{r global_options,include=FALSE}
+knitr::opts_chunk$set(warning=FALSE, message=FALSE)
+```
+
+
+The main natverse tools that exist for working with FAFB data are [catnat](https://jefferislab.github.io/catnat/reference/index.html), [rcatmaid](http://natverse.org/rcatmaid/reference/index.html), and [elmr] http://natverse.org/elmr/index.html
+
+
+To access v14 FAFB data using R, you first need to establish a catmaid connection
+```{r login,echo=TRUE,results='hide',message=FALSE,warning=FALSE,eval=FALSE}
+catmaid_login(server="https://neuropil.janelia.org/tracing/fafb/v14/",authname='fly',authpassword='superfly',token="yourtokenhere")
+```
+```{r login_function, include=FALSE}
+catmaid_login(server="https://neuropil.janelia.org/tracing/fafb/v14/",authname='fly',authpassword='superfly',token="cecd262c43ce5c1a9166fc65b9ea3d25464b1150")
+rotationMatrix=rbind(c(1,0,0,0),c(0,-1,0,0),c(0,0,-1,0),c(0,0,0,1))
+windowRect=c(1221,231,1767,700)
+```
+
+<font size=5> Fetch Neurons from FAFB </font>
+
+Provide the skeleton ID of the desired neuron in v14 to fetch the skeleton and read it as a neuron object
+```{r, webgl=TRUE, echo=TRUE, results='hide'}
+DNa02=read.neurons.catmaid(12526673)
+open3d(userMatrix=rotationMatrix,windowRect=windowRect,zoom=0.33)
+plot3d(DNa02,soma=TRUE,lwd=2,col='black',WithNodes=FALSE)
+plot3d(FAFB)
+```
+
+
+<font size=5> Compare with neurons in other brain spaces</font>
+
+Skeletons fetched from v14 are registered to the template brain called <b>FAFB</b>. To compare with neurons in other brain spaces, these neuron objects can be transformed using <b>xform_brain</b>. For example, here a neuron traced from a ligh-level image(in blue) is compared with a skeleton fetched from FAFB(in black).
+```{r,include=FALSE}
+clear3d()
+```
+```{r load_tracing, include=TRUE,results='hide'}
+Namiki_tracing_1 <-read.neuron('data/Namiki_tracing_registered.swc')
+Namiki_tracing_FCWB<-xform_brain(Namiki_tracing_1,sample=JFRC2013,reference=FCWB)
+```
+```{r, webgl=TRUE, echo=TRUE,results='hide'}
+#transform neuron into FCWB template brain space 
+A2_EM_FCWB<- xform_brain(DNa02,sample=FAFB, reference = FCWB)
+
+#plot together with light-level tracing
+open3d(userMatrix=rotationMatrix,windowRect=windowRect,zoom=0.33)
+plot3d(A2_EM_FCWB,lwd=2,col="black",WithNodes=FALSE)
+plot3d(Namiki_tracing_FCWB,lwd=2,col="blue",WithNodes=FALSE)
+plot3d(FCWB)
+```
+
+<font size=5> Find synapses</font>
+
+To get the locations of synapses made by your neuron of interest, use [get_synapses](https://jefferislab.github.io/catnat/reference/get.synapses.html): 
+```{r,include=FALSE}
+clear3d()
+```
+```{r, webgl=TRUE, echo=TRUE,results='hide'}
+DNa02_presynapses=get.synapses(DNa02,target=c("PRE"))
+DNa02_postsynapses=get.synapses(DNa02,target=c("POST"))
+
+#plot synapse locations with neuron 
+open3d(userMatrix=rotationMatrix,windowRect=windowRect,zoom=0.33)
+plot3d(DNa02,lwd=2,col='black',withNodes=FALSE,soma = TRUE)
+points3d(DNa02_presynapses, col = "red", lwd = 10)
+points3d(DNa02_postsynapses, col = "blue", lwd = 2)
+plot3d(FAFB)
+```
+
+Synapses can be grouped based on brain region using [inside_neuropils](https://jefferislab.github.io/catnat/reference/inside_neuropils.html)
+```{r,include=FALSE}
+clear3d()
+```
+```{r, webgl=TRUE, echo=TRUE,results='hide'}
+DNa02=read.neurons.catmaid(12526673)
+pre_neuropils = inside_neuropils(DNa02,brain = FAFB14NP.surf, "PRE")
+post_neuropils= inside_neuropils(DNa02,brain = FAFB14NP.surf, "POST")
+```
+<font size=5> Get synaptic partners</font>
+
+```{r,include=FALSE}
+clear3d()
+```
+```{r, webgl=TRUE, echo=TRUE,results='hide'}
+synaptic_partners=catmaid_query_connected(12526673)
+presynaptic_partners=read.neurons.catmaid(synaptic_partners$incoming['partner'][,],OmitFailures = T)
+postsynaptic_partners=read.neurons.catmaid(synaptic_partners$outgoing['partner'][,],OmitFailures = T)
+```
+```{r,include=FALSE}
+clear3d()
+```
+Plot <span style="color:red"> presynaptic partners </span>
+```{r, webgl=TRUE, echo=TRUE,results='hide'}
+open3d(userMatrix=rotationMatrix,windowRect=windowRect,zoom=0.6)
+plot3d(presynaptic_partners,col='red',lwd=1,soma=TRUE)
+plot3d(FAFB)
+```
+```{r,include=FALSE}
+clear3d()
+```
+Plot <span style="color:blue"> postsynaptic partners </span>
+```{r, webgl=TRUE, echo=TRUE,results='hide'}
+open3d(userMatrix=rotationMatrix,windowRect=windowRect,zoom=0.6)
+plot3d(postsynaptic_partners,col='blue',lwd=1,soma=TRUE)
+plot3d(FAFB)
+```
+```{r,include=FALSE}
+clear3d()
+```
+<font size=5> Evaluate neuron connectivity </font>
+
+In this example, we evaluate the connectivity between two classes of neurons and plot the resutls as a heatmap. In this visualization, the values are synaptic weights and row and column names are neuron names from CATMAID
+
+```{r, webgl=TRUE, echo=TRUE}
+#read in first class of neurons 
+PFL3_neuron_ids=c(12526784,12526732,12526393,12526785,12526661,12526663,12526731,12526733,
+                  12526734,12526735,12526738,12526894)
+PFL_3_neurons=read.neurons.catmaid(PFL3_neuron_ids)
+
+#read in second class of neurons 
+DN_neuron_ids=c(12526591,12526791)
+DN_neurons=read.neurons.catmaid(DN_neuron_ids)
+
+#generate connectivity matrix 
+connectivity_matrix=skeleton_connectivity_matrix(PFL_3_neurons,DN_neurons)
+neuron.heatmap(connectivity_matrix)
+```
+<font size=5> Find the number of synapses per connection </font>
+
+Each synaptic connection has a unique <b>connector_id</b>. Here, we find all incoming and outgoing partners of our neuron of interest, and list the partners with the greatest numbers of synaptic connections. The top incoming partners(red), the top outgoing partners(blue), and our neuron of interest(black) are plotted below.
+```{r,include=FALSE}
+clear3d()
+```
+```{r, webgl=TRUE, echo=TRUE}
+
+#get all connections 
+connector_table=data.table(catmaid_get_connector_table(12526673))
+
+#count the number of connections for synaptic partner 
+incoming_connector_counts=connector_table[connector_table$direction=='incoming'][, .N, by=.(partner_skid)]
+outgoing_connector_counts=connector_table[connector_table$direction=='outgoing'][, .N, by=.(partner_skid)]
+
+#display the 10 synaptic partners with the greatest number of conections 
+incoming_connector_counts[order(-N)][1:10]
+outgoing_connector_counts[order(-N)][1:10]
+
+#plot the top synaptic partners 
+top_incoming_partners=read.neurons.catmaid(incoming_connector_counts[order(-N)][1:10]$partner_skid)
+top_outgoing_partners=read.neurons.catmaid(outgoing_connector_counts[order(-N)][1:10]$partner_skid)
+open3d(userMatrix=rotationMatrix,windowRect=windowRect,zoom=0.6)
+plot3d(top_incoming_partners,col='red',lwd=2,WithNodes=FALSE,soma=TRUE)
+plot3d(top_outgoing_partners,col='blue',lwd=2,WithNodes=FALSE,soma=TRUE)
+plot3d(DNa02,col='black',WithNodes=FALSE,lwd=3,soma=TRUE)
+plot3d(FAFB)
+```
+
+
+<font size=5> Fetch brain regions </font>
+
+A list of brain regions/volumes are defined on the CATMAID server. You can view the list of all defined volumes using: 
+```{r,include=FALSE}
+clear3d()
+```
+```{r, echo=TRUE,results='hide'}
+catmaid_get_volumelist()$name
+```
+You can fetch a volume using [catmaid_get_volume](http://natverse.org/rcatmaid/reference/catmaid_get_volume.html). For example: 
+```{r, webgl=TRUE,echo=TRUE}
+FB=catmaid_get_volume('FB',rval="mesh3d")
+PB=catmaid_get_volume('PB',rval="mesh3d")
+LAL_R=catmaid_get_volume('LAL_R',rval="mesh3d")
+open3d(userMatrix=rotationMatrix,windowRect=windowRect,zoom=0.7)
+plot3d(DNa02,col='black',lwd=3,WithNodes = FALSE,soma=TRUE)
+plot3d(FB,add=TRUE,box=FALSE,aes=FALSE,col='grey',alpha=0.2)
+plot3d(PB,add=TRUE,box=FALSE,aes=FALSE,col='grey',alpha=0.2)
+plot3d(LAL_R,add=TRUE,box=FALSE,aes=FALSE,col='grey',alpha=0.2)
+```
+
+<font size=5> Finding your neuron in FAFB </font>
+
+If you have a neuron registred to a standard brain template, you can use the transformation to the FAFB template to find the coordinates of your neuron in the FAFB volume. For example:
+```{r,include=FALSE}
+clear3d()
+```
+```{r,echo=TRUE,results='hide'}
+g13_Namiki<- read.neuron('data/Namiki_SS002259_tracing_R_revised.swc')
+g13_FAFB_raw=xform_brain(x=g13_Namiki,sample=JRC2018F,reference=FAFB)
+g13_FAFB<- g13_FAFB_raw/voxdims(FAFB)
+g13_pixel_coordinates <- xyzmatrix(g13_FAFB)
+```
+This generates a list of all of the x,y,z coordinates associated with your neuron in FAFB space. However, it can often be helpful to find the coordinates of only a small region of your neuron to begin your search in FAFB. 
+The following function allows you to draw a window around the region of the neuron you wish to keep and returns that segment as a neuron object. 
+```{r,echo=TRUE,results='hide'}
+subsetNeuron <- function(neuronObject,templateBrain){
+	#neuronObject is a neuron object as defined by the neuroanatomy toolbox (created using read.neuron())
+	#neuronObject is assumed to be registered to the JFRC2 template brain
+	cordvector=xyz.coords(x=unlist(neuronObject$d['X']),y=unlist(neuronObject$d['Y']),z=unlist(neuronObject$d['Z']),xlab=rownames(neuronObject$d))
+	open3d()
+	plot3d(neuronObject,color='black',lwd=2,WithNodes = FALSE)
+	plot3d(templateBrain)
+	cat (paste("When you're ready to select a segment, press [enter] to continue.",
+						 "Then draw a box around the desired neuron segment",sep=""))
+	line <- readline()
+	myselection=rgl.select3d()
+	keep=myselection(cordvector)
+	prune=cordvector$xlab[!keep]
+	prunedneuron=prune_vertices(neuronObject,c(prune))
+	return(prunedneuron)
+}
+```
+```{r,include=FALSE}
+clear3d()
+```
+Plotted in red is a smaller fragment of the neuron, selected using the function above. 
+```{r, webgl=TRUE,echo=FALSE,result='hide'}
+g13_fragment=read.neuron('data/g13_fragment.swc',class='neuron')
+open3d(userMatrix=rotationMatrix,windowRect=windowRect,zoom=0.7)
+plot3d(g13_fragment,col='red',lwd=2,WithNodes=FALSE)
+plot3d(g13_FAFB_raw,col='black',lwd=2,WithNodes=FALSE)
+plot3d(FAFB)
+```
+```{r,include=FALSE}
+clear3d()
+```
+Getting the coordinates of the points in this fragment gives the following (here, only 10 coordinates are shown) 
+```{r,echo=TRUE}
+g13_fragment_FAFB<- g13_fragment/voxdims(FAFB)
+g13_fragment_pixel_coordinates <- xyzmatrix(g13_fragment_FAFB)
+g13_fragment_pixel_coordinates[1:10,]
+```
+

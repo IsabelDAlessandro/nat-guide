@@ -1,0 +1,216 @@
+---
+title: " Working with Hemibrain Data"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(knitr)
+library(rgl)
+knit_hooks$set(webgl = hook_webgl)
+source('nat-startup.R')
+```
+
+```{r global_options,include=FALSE}
+knitr::opts_chunk$set(warning=FALSE, message=FALSE)
+```
+
+Data from the Janelia hemibrain release is available at: https://neuprint.janelia.org/?dataset=hemibrain:v1.0.1&qt=findneurons 
+The package [neuprintr](http://natverse.org/neuprintr/reference/index.html) can be used to work with this data in R 
+
+<font size=5> Fetch Hemibrain Skeletons </font>
+To access hemibrain data using R, you first have to login to the neuPrint server using the [neuprint_login](http://natverse.org/neuprintr/reference/neuprint_login.html) function. Find your token at https://neuprint.janelia.org/account\
+
+```{r,echo=TRUE,results='hide',message=FALSE,warning=FALSE,eval=FALSE}
+conn = neuprint_login(server= "https://neuprint.janelia.org/",
+                      token= "yourtokenhere")
+```
+```{r, include=FALSE}
+conn = neuprint_login(server= "https://neuprint.janelia.org/",
+                      token= "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImlzYWJlbGFkYWxlc3NhbmRyb0BnbWFpbC5jb20iLCJsZXZlbCI6Im5vYXV0aCIsImltYWdlLXVybCI6Imh0dHBzOi8vbGgzLmdvb2dsZXVzZXJjb250ZW50LmNvbS9hLS9BT2gxNEdqRVMzRG9INXBPUTU4Rmh6TUQwQnlyYUg0RFNPSUpBMzA3NVoycT9zej01MD9zej01MCIsImV4cCI6MTc2NzI0NzM3MH0.WLZrEFi2rK9E6z5RCU_NHToY1gI7O2t6uLnJ5nGt5vg")
+hemibrainMatrix=rbind(c(1,-0.03,-0.04,0),c(-0.04,0,-1,0),c(0.04,1,0,0),c(0,0,0,1))
+rotationMatrix=rbind(c(1,0,0,0),c(0,-1,0,0),c(0,0,-1,0),c(0,0,0,1))
+windowRect=c(1221,231,1767,700)
+```
+There are many ways to find a neuron, including by name, bodyid, or ROI innervation. Here, we find all hemibrain neurons with names matching 'R1'
+```{r, webgl=TRUE, echo=TRUE}
+R1.info = neuprint_search("R1_.*")
+
+#read in the skeletons as neurons 
+R1_neurons = neuprint_read_neurons(R1.info$bodyid)
+open3d(userMatrix=hemibrainMatrix,windowRect=windowRect,zoom=0.7)
+plot3d(R1_neurons,lwd=2,WithNodes=FALSE,soma=TRUE)
+```
+<font size=5> Fetch brain regions </font>
+You can see a list of all available brain region meshes using the following command(*Note: not all of these meshes are currently available for download):
+```{r,include=FALSE}
+clear3d()
+```
+```{r}
+neuprint_ROIs()
+```
+To fetch these messages, use [neuprint_ROI_mesh](http://natverse.org/neuprintr/reference/neuprint_ROI_mesh.html): 
+```{r, webgl=TRUE, echo=TRUE}
+#plot our neurons of interest 
+open3d(userMatrix=hemibrainMatrix,windowRect=windowRect,zoom=0.7)
+plot3d(R1_neurons,lwd=2,WithNodes=FALSE,soma=TRUE)
+
+#add EB and LAL meshes 
+EB=neuprint_ROI_mesh(roi = "EB")
+plot3d(EB, add = TRUE, alpha = 0.1)
+LAL_R=neuprint_ROI_mesh(roi = "LAL(R)")
+plot3d(LAL_R, add = TRUE, alpha = 0.1)
+```
+```{r,include=FALSE}
+clear3d()
+```
+<font size=5> Compare with neurons in other brain spaces</font>
+The JRCFIB2018F template brain can be used to transform skeletons fetched from the hemibrain into other tempate brain spaces for comparisons with other neurons. To download the template brain and necessary registration files, run the following code (this takes a while but only needs to be done once).
+```{r,echo=TRUE,results='hide',message=FALSE,warning=FALSE,eval=FALSE}
+remotes::install_github("natverse/nat.jrcbrains")
+nat.jrcbrains::download_saalfeldlab_registrations()
+```
+Then apply the transformations. In this example, the hemibrain data is being transformed into the FCWB template brain space so that it can be used to find similar flycircuit neurons or gal4 lines via nblast. 
+*Note: [Java](https://www.oracle.com/java/technologies/javase-downloads.html) and [rJava](https://github.com/s-u/rJava) need to be installed in order to run the transformation: 
+```{r, webgl=TRUE, echo=TRUE,results='hide',message=FALSE,warning=FALSE}
+#first transform into an intermediate brain space for which the transofrmation is defined 
+R1.jrc2018F = xform_brain(R1_neurons*8/1000, reference="JRC2018F", sample="JRCFIB2018F")
+
+#then transform into FCWB brain space 
+R1.fcwb = xform_brain(R1.jrc2018F, reference='FCWB', sample='JRC2018F')
+
+#plot neurons with fcwb template brain 
+open3d(userMatrix=rotationMatrix,windowRect=windowRect,zoom=0.6)
+plot3d(R1.fcwb,lwd=2,WithNodes=FALSE)
+plot3d(FCWB)
+```
+
+<font size=5> Find synapse locations</font>
+```{r, webgl=TRUE, echo=TRUE,results='hide',message=FALSE,warning=FALSE}
+R1_synapses=neuprint_get_synapses(R1.info$bodyid)
+
+open3d(userMatrix=hemibrainMatrix,windowRect=windowRect,zoom=0.7)
+plot3d(R1_neurons,col='black',lwd=2,WithNodes=FALSE,soma=TRUE)
+points3d(xyzmatrix(R1_synapses),col='red',lwd=2)
+```
+```{r,include=FALSE}
+clear3d()
+```
+<font size=5> Get synaptic partners</font>
+```{r,echo=FALSE,results='hide',message=FALSE,warning=FALSE}
+R1_all_inputs.neurons <- read.neurons('data/R1_all_input_neurons.swc',class="neuron")
+R1_all_outputs.neurons <- read.neurons('data/R1_all_output_neurons.swc',class="neuron") 
+```
+Finding all the <span style="color:red"> presynaptic partners of the R1 neurons 
+```{r,echo=TRUE,results='hide',message=FALSE,warning=FALSE}
+#get all inputs to R1 neurons 
+R1_all_inputs=unique(neuprint_connection_table(R1.info$bodyid,prepost='PRE')$partner)
+```
+```{r,echo=TRUE,results='hide',message=FALSE,warning=FALSE,eval=FALSE}
+R1_all_inputs.neurons=neuprint_read_neurons(R1_all_inputs$bodyid)
+```
+```{r, webgl=TRUE, echo=TRUE,results='hide',message=FALSE,warning=FALSE}
+open3d(userMatrix=hemibrainMatrix,windowRect=windowRect,zoom=0.7)
+plot3d(R1_neurons,col='black',lwd=2,WithNodes=FALSE,soma=TRUE)
+plot3d(R1_all_inputs.neurons,col='red',lwd=2,WithNodes=FALSE,soma=TRUE)
+```
+```{r,include=FALSE}
+clear3d()
+```
+Finding all the <span style="color:blue"> postsyanptic partners of the R1 neurons 
+```{r,echo=TRUE,results='hide',message=FALSE,warning=FALSE}
+R1_all_outputs=unique(neuprint_connection_table(R1.info$bodyid,prepost='POST')$partner)
+```
+```{r,echo=TRUE,results='hide',message=FALSE,warning=FALSE,eval=FALSE}
+R1_all_outputs.neurons=neuprint_read_neurons(R1_all_outputs)
+```
+```{r, webgl=TRUE, echo=TRUE,results='hide',message=FALSE,warning=FALSE}
+open3d(userMatrix=hemibrainMatrix,windowRect=windowRect,zoom=0.7)
+plot3d(R1_neurons,col='black',lwd=2,WithNodes=FALSE,soma=TRUE)
+plot3d(R1_all_outputs.neurons,col='blue',lwd=2,WithNodes=FALSE,soma=TRUE)
+
+```
+Next,group these inptus and outputs by type 
+```{r, webgl=TRUE, echo=TRUE,results='hide',message=FALSE,warning=FALSE}
+library(plyr)
+#group the inputs by type 
+R1_all_inputs_count=count(neuprint_get_meta(R1_all_inputs),'type')
+R1_all_inputs_count=subset(R1_all_inputs_count,freq>5)
+R1_all_inputs_count=subset(R1_all_inputs_count,type!='NA')
+
+#group the outputs by type 
+R1_all_outputs_count=count(neuprint_get_meta(R1_all_outputs),'type')
+R1_all_outputs_count=subset(R1_all_outputs_count,freq>5)
+R1_all_outputs_count=subset(R1_all_outputs_count,type!='NA')
+
+#aggregate data and plot as a bar graph 
+R1_all_partners=merge(R1_all_inputs_count,R1_all_outputs_count,by='type',all=TRUE)
+R1_all_partners.m=melt(R1_all_partners, id.vars='type')
+R1_all_partners.m=R1_all_partners.m[order(-R1_all_partners.m$value),]
+R1_all_partners.m$Groups <- factor(R1_all_partners.m$type, levels = R1_all_partners[order(R1_all_partners$freq.x),]$type)
+plot<-ggplot(R1_all_partners.m,aes(fill=variable,x=Groups,y=value))+geom_bar(stat="identity")+
+  coord_flip()+theme_bw()+scale_x_discrete(name ="Region")+ ylab('Synapse Count')+theme(legend.position="none")+scale_fill_manual(values=c("blue","red"))
+print(plot)
+```
+
+We can also look only at the synaptic partners which are common to the set of all R1 neurons using neuprint_common_connectivity
+```{r,echo=FALSE,results='hide',message=FALSE,warning=FALSE}
+R1_common_inputs=neuprint_common_connectivity(R1.info$bodyid,prepost='PRE')
+R1_common_inputs.neurons=read.neurons('data/R1_common_input_neurons.swc',class="neuron")
+
+R1_common_outputs=neuprint_common_connectivity(R1.info$bodyid,prepost='POST')
+R1_common_outputs.neurons=read.neurons('data/R1_common_output_neurons.swc',class="neuron")
+```
+```{r,echo=TRUE,results='hide',message=FALSE,warning=FALSE,eval=FALSE}
+R1_common_inputs=neuprint_common_connectivity(R1.info$bodyid,prepost='PRE')
+R1_common_inputs.neurons=neuprint_read_neurons(as.character(colnames(R1_common_inputs)))
+
+R1_common_outputs=neuprint_common_connectivity(R1.info$bodyid,prepost='POST')
+R1_common_outputs.neurons=neuprint_read_neurons(as.character(colnames(R1_common_outputs)))
+```
+```{r, webgl=TRUE, echo=TRUE,results='hide',message=FALSE,warning=FALSE}
+#plot common inputs and output 
+open3d(userMatrix=hemibrainMatrix,windowRect=windowRect,zoom=0.7)
+plot3d(R1_neurons,col='black',lwd=2,WithNodes=FALSE,soma=TRUE)
+plot3d(R1_common_inputs.neurons,col='red',lwd=2,WithNodes=FALSE,soma=TRUE)
+plot3d(R1_common_outputs.neurons,col='blue',lwd=2,WithNodes=FALSE,soma=TRUE)
+```
+```{r,include=FALSE}
+clear3d()
+```
+Grouping these inputs and outputs by type, we get: 
+```{r, webgl=TRUE, echo=FALSE,results='hide',message=FALSE,warning=FALSE}
+R1_common_inputs_df=neuprint_get_meta(as.character(colnames(R1_common_inputs)))
+
+R1_common_outputs_df=neuprint_get_meta(as.character(colnames(R1_common_outputs)))
+
+R1_input_type=count(R1_common_inputs_df,'type')
+R1_output_type=count(R1_common_outputs_df,'type')
+R1_common_partners=merge(R1_input_type,R1_output_type,by='type',all=TRUE)
+R1_common_partners.m=melt(R1_common_partners, id.vars='type')
+R1_common_partners.m=R1_common_partners.m[order(-R1_common_partners.m$value),]
+R1_common_partners.m$Groups <- factor(R1_common_partners.m$type, levels = R1_common_partners[order(R1_common_partners$freq.y),]$type)
+R1_plot=ggplot(R1_common_partners.m,aes(fill=variable,x=Groups,y=value))+geom_bar(stat="identity")+ ggtitle('R1a common partners')+
+  coord_flip()+theme_bw()+scale_x_discrete(name ="Neuron Type")+ ylab('# Connections')+theme(legend.position="none")+scale_fill_manual(values=c("blue","red"))
+print(R1_plot)
+```
+
+<font size=5> Evaluate neuron connectivity</font>
+The neuprint_get_adjacency_matrix function can be used to generate an adjacency matrix between two sets of neurons. Here, we look at the connectivity between R1 and EPG neurons. 
+```{r, webgl=TRUE, echo=TRUE,results='hide',message=FALSE,warning=FALSE}
+
+#find all EPG neurons 
+EPG.info=neuprint_search(".*EPG.*")
+
+#get adjacency matrix 
+adj_mat=neuprint_get_adjacency_matrix(c(R1.info$bodyid,EPG.info$bodyid))
+
+#plot results as a heatmap
+rownames(adj_mat)=vector(mode='character',length=dim(adj_mat)[1])
+colnames(adj_mat)=vector(mode='character',length=dim(adj_mat)[2])
+Heatmap(adj_mat,row_title='R',column_title='EPG',show_row_dend=FALSE,
+        show_column_dend=FALSE,show_row_names=FALSE,show_column_names=FALSE,heatmap_legend_param=list(title='weight'))
+
+```
+
+<font size=5> Get the shortest paths </font>
