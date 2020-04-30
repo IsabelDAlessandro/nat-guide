@@ -5,5 +5,11 @@ navbar:
   left:
    - text: "Home"
      href: index.html
-   - text: "Speed and Distance"
-     href: testfile.html
+   - text: "Basic Nat Funcions"
+     href: basic-nat-functions.html
+   - text: "NBLAST"
+     href: nblast.html
+   - text: "CATMAID"
+     href: working-with-CATMAID-data2D.html
+   - text: "Hemibrain"
+     href: working-with-hemibrain-data2D.html
