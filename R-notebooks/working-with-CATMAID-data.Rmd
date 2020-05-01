@@ -5,9 +5,9 @@ output: html_document
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
-library(knitr)
-library(rgl)
 knit_hooks$set(webgl = hook_webgl)
+source('/Users/isabeldalessandro/Downloads/loadNatPackages.R')
+loadNatPackages()
 source('nat-startup.R')
 ```
 ```{r global_options,include=FALSE}

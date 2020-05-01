@@ -4,9 +4,9 @@ title: "Basic Nat Functions"
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(warning=FALSE, message=FALSE)
-library(knitr)
-library(rgl)
 knit_hooks$set(webgl = hook_webgl)
+source('/Users/isabeldalessandro/Downloads/loadNatPackages.R')
+loadNatPackages()
 source('nat-startup.R')
 ```
 
