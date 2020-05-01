@@ -145,7 +145,7 @@ R1_all_partners.m=melt(R1_all_partners, id.vars='type')
 R1_all_partners.m=R1_all_partners.m[order(-R1_all_partners.m$value),]
 R1_all_partners.m$Groups <- factor(R1_all_partners.m$type, levels = R1_all_partners[order(R1_all_partners$freq.x),]$type)
 plot<-ggplot(R1_all_partners.m,aes(fill=variable,x=Groups,y=value))+geom_bar(stat="identity")+
-  coord_flip()+theme_bw()+scale_x_discrete(name ="Region")+ ylab('Synapse Count')+theme(legend.position="none")+scale_fill_manual(values=c("blue","red"))
+  coord_flip()+theme_bw()+scale_x_discrete(name ="Region")+ ylab('Synapse Count')+theme(legend.position="none")+scale_fill_manual(values=c("red","blue"))
 print(plot)
 ```
 <img src="images/R1_all_synapses_barplot.png"/>

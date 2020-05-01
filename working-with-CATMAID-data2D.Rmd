@@ -80,14 +80,16 @@ Synapses can be grouped based on brain region using [inside_neuropils](https://j
 ```{r, webgl=TRUE, echo=TRUE,results='hide'}
 DNa02=read.neurons.catmaid(12526673)
 ```
-First, grouping the presynaptic inputs by region, we get: 
+First, grouping the presynaptic partners of our neuron by brain region, we get: 
 ```{r, echo=TRUE}
-pre_neuropils = inside_neuropils(DNa02,brain = FAFB14NP.surf, "PRE")
+#Note: here the 'POST' tag indicates that our neuron is postsynaptic to the input neurons being found 
+pre_neuropils = inside_neuropils(DNa02,brain = FAFB14NP.surf, "POST")
 pre_neuropils
 ```
-Next,grouping the postsyanptic inputs by region, we get:
+Next,grouping the postsyanptic partners of our neuron by brain region, we get:
 ```{r, echo=TRUE}
-post_neuropils= inside_neuropils(DNa02,brain = FAFB14NP.surf, "POST")
+#Note: here the 'PRE' tag indicates that our neuron is presyanptic to the output neurons being found 
+post_neuropils= inside_neuropils(DNa02,brain = FAFB14NP.surf, "PRE")
 post_neuropils
 ```
 Plotting the results of this analysis using a barplot
@@ -96,13 +98,12 @@ pre_neuropils_df=data.frame(names=names(pre_neuropils$`12526673`),counts=as.nume
 pre_neuropils_df=subset(pre_neuropils_df,counts>0)
 post_neuropils_df=data.frame(names=names(post_neuropils$`12526673`),counts=as.numeric(unlist(post_neuropils)))
 post_neuropils_df=subset(post_neuropils_df,counts>6)
-all_neuropils_df=merge(post_neuropils_df,pre_neuropils_df,by='names',all=TRUE)
+all_neuropils_df=merge(pre_neuropils_df,post_neuropils_df,by='names',all=TRUE)
 all_neuropils_df.m=melt(all_neuropils_df, id.vars='names')
 all_neuropils_df.m=all_neuropils_df.m[order(-all_neuropils_df.m$value),]
 all_neuropils_df.m$Groups <- factor(all_neuropils_df.m$names, levels = all_neuropils_df[order(all_neuropils_df$counts.x),]$names)
 ggplot(all_neuropils_df.m,aes(fill=variable,x=Groups,y=value))+geom_bar(stat="identity")+
-  coord_flip()+theme_bw()+scale_x_discrete(name ="Region")+ ylab('Synapse Count')+theme(legend.position="none")+scale_fill_manual(values=c("blue","red"))
-ggsave('images/A2_connections_grouped.png',device='png')
+  coord_flip()+theme_bw()+scale_x_discrete(name ="Region")+ ylab('Synapse Count')+theme(legend.position="none")+scale_fill_manual(values=c("red","blue"))
 ```
 <img src="images/A2_connections_grouped.png"/>
 
@@ -148,7 +149,7 @@ DN_neurons=read.neurons.catmaid(DN_neuron_ids)
 
 #generate connectivity matrix 
 connectivity_matrix=skeleton_connectivity_matrix(PFL_3_neurons,DN_neurons)
-neuron.heatmap(connectivity_matrix)
+gplots::heatmap.2(x=connectivity_matrix,cexRow=1,cexCol=1,margins = c(9, 9))
 ```
 <img src="images/PFL3_DN_connectivity_heatmap.png"/>
 
@@ -169,3 +170,4 @@ outgoing_connector_counts=connector_table[connector_table$direction=='outgoing']
 incoming_connector_counts[order(-N)][1:10]
 outgoing_connector_counts[order(-N)][1:10]
 ```
+<img src="images/A2_top_connections.png"/>
