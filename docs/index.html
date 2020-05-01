@@ -303,7 +303,21 @@ $(document).ready(function () {
 </div>
 
 
-<p>This is a set of notebooks designed to be an introduction to working with the neuroanatomy (nat) toolbox in R</p>
+<p>This is a set of notebooks is designed to be an introduction to working with some of useful [natverse] (<a href="http://natverse.org/" class="uri">http://natverse.org/</a>) functions in R. You can view all of these notebooks online <a href="http://www.isabeldalessandro.com/nat-guide/">here</a>.</p>
+<div id="information-contained-in-these-guides" class="section level2">
+<h2>Information contained in these guides</h2>
+<p>Currently, I’ve made available the following four notebooks:</p>
+<ul>
+<li><p><b>Basic Nat Functions</b> - This notebook describes some basic operations that can be performed using the <a href="http://natverse.org/nat/">neuroanatomy toolbox</a>. It includes examples showing how to register a light level tracing, view a traced skeleton in 3D, transform a neuron between template brain spaces, and work with <a href="http://www.flycircuit.tw/">flycircuit</a> data.</p></li>
+<li><p><b>NBLAST</b> - This notebook describes how to work with the <a href="http://natverse.org/nat.nblast/">nblast package</a> in R to implement the neuron similarity algorithm described in <a href="https://linkinghub.elsevier.com/retrieve/pii/S0896627316302653">Costa et al. 2016</a>. It includes examples showing how to use NBLAST to assess the similarity between neurons, and how to use NBLAST to find flycircuit clones and Gal4 lines matching a neuron of interest.</p></li>
+<li><p><b>CATMAID</b> - This notebook describes how to work with the <a href="https://www.cell.com/cell/fulltext/S0092-8674(18)30787-6">FAFB EM dataset</a> by making calls to CATMAID through R. It incldues examples showing how to fetch neurons from FAFB, how to compare these neurons with neurons in other brain spaces, how to find and evaluate synapses and synaptic partners.</p></li>
+<li><p><b>Hemibrain</b> - This notebook describes how to use the <a href="http://natverse.org/neuprintr/index.html">neuprintr</a> package to work with the <a href="https://www.janelia.org/project-team/flyem/hemibrain">hemibrain dataset</a> by interfacing with <a href="https://neuprint.janelia.org/?dataset=hemibrain:v1.0.1">neuprint</a>. It includes examples showing how to fetch hemibrain skeletons and brain regions, how to compare these skeletons with neurons in other brain spaces, and how to find and evaluate synapses and synaptic partners.</p></li>
+</ul>
+</div>
+<div id="working-with-these-notebooks" class="section level2">
+<h2>Working with these notebooks</h2>
+<p>I’ve also made available <a href="https://github.com/IsabelDAlessandro/nat-guide/tree/master/R-notebooks">here</a> (private repository, permission needed) the R notebooks used to generate these online guides. You can download the notebooks to work with and modify the code yourself. To do so, just download the <b>R-notebooks</b> folder. Contained in this folder are four .Rmd notebooks corresponding to the four online notebooks described above, a data folder containing all the data files necessary to run the code, and some files to load in the required packages. I suggest running the code block-by-block. Some code blocks require you to add in your own information (e.g. your own catmaid login info and natverse token).</p>
+</div>
 
 
 
