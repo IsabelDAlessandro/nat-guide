@@ -3,11 +3,11 @@ title: "NBLAST"
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(warning=FALSE, message=FALSE)
-knit_hooks$set(webgl = hook_webgl)
-source('/Users/isabeldalessandro/Downloads/loadNatPackages.R')
+source('loadNatPackages.R')
 loadNatPackages()
 source('nat-startup.R')
+knitr::opts_chunk$set(warning=FALSE, message=FALSE)
+knit_hooks$set(webgl = hook_webgl)
 ```
 
 ```{r global_options,include=FALSE}
@@ -111,7 +111,7 @@ nblast_fc_df=data.frame(name=names(nblast_fc),score=as.numeric(nblast_fc))
 nblast_fc_df[order(-nblast_fc_df$score),][1:10,]
 ```
 
-<font size=5> Using NBLAST to find Gal4 lines clones </font>
+<font size=5> Using NBLAST to find Gal4 lines</font>
 
 To find Gal4 lines similar to your neuron of interest, first download the Gal4 data. This takes a while but only needs to be done once. (Note: this database contains only GMR lines)
 ```{r,echo=TRUE}

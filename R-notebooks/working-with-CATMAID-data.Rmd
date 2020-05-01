@@ -4,11 +4,11 @@ output: html_document
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
-knit_hooks$set(webgl = hook_webgl)
-source('/Users/isabeldalessandro/Downloads/loadNatPackages.R')
+source('loadNatPackages.R')
 loadNatPackages()
 source('nat-startup.R')
+knitr::opts_chunk$set(warning=FALSE, message=FALSE)
+knit_hooks$set(webgl = hook_webgl)
 ```
 ```{r global_options,include=FALSE}
 knitr::opts_chunk$set(warning=FALSE, message=FALSE)
@@ -81,11 +81,33 @@ Synapses can be grouped based on brain region using [inside_neuropils](https://j
 ```{r,include=FALSE}
 clear3d()
 ```
-```{r, webgl=TRUE, echo=TRUE,results='hide'}
-DNa02=read.neurons.catmaid(12526673)
-pre_neuropils = inside_neuropils(DNa02,brain = FAFB14NP.surf, "PRE")
-post_neuropils= inside_neuropils(DNa02,brain = FAFB14NP.surf, "POST")
+First, grouping the presynaptic partners of our neuron by brain region, we get: 
+```{r, echo=TRUE}
+#Note: here the 'POST' tag indicates that our neuron is postsynaptic to the input neurons being found 
+pre_neuropils = inside_neuropils(DNa02,brain = FAFB14NP.surf, "POST")
+pre_neuropils
 ```
+Next,grouping the postsyanptic partners of our neuron by brain region, we get:
+```{r, echo=TRUE}
+#Note: here the 'PRE' tag indicates that our neuron is presyanptic to the output neurons being found 
+post_neuropils= inside_neuropils(DNa02,brain = FAFB14NP.surf, "PRE")
+post_neuropils
+```
+Plotting the results of this analysis using a barplot
+```{r,echo=TRUE,results='hide',message=FALSE,warning=FALSE,eval=FALSE}
+pre_neuropils_df=data.frame(names=names(pre_neuropils$`12526673`),counts=as.numeric(unlist(pre_neuropils)))
+pre_neuropils_df=subset(pre_neuropils_df,counts>0)
+post_neuropils_df=data.frame(names=names(post_neuropils$`12526673`),counts=as.numeric(unlist(post_neuropils)))
+post_neuropils_df=subset(post_neuropils_df,counts>6)
+all_neuropils_df=merge(pre_neuropils_df,post_neuropils_df,by='names',all=TRUE)
+all_neuropils_df.m=melt(all_neuropils_df, id.vars='names')
+all_neuropils_df.m=all_neuropils_df.m[order(-all_neuropils_df.m$value),]
+all_neuropils_df.m$Groups <- factor(all_neuropils_df.m$names, levels = all_neuropils_df[order(all_neuropils_df$counts.x),]$names)
+ggplot(all_neuropils_df.m,aes(fill=variable,x=Groups,y=value))+geom_bar(stat="identity")+
+  coord_flip()+theme_bw()+scale_x_discrete(name ="Region")+ ylab('Synapse Count')+theme(legend.position="none")+scale_fill_manual(values=c("red","blue"))
+ggsave('images/A2_connections_grouped.png',device='png')
+```
+
 <font size=5> Get synaptic partners</font>
 
 ```{r,include=FALSE}
@@ -133,7 +155,7 @@ DN_neurons=read.neurons.catmaid(DN_neuron_ids)
 
 #generate connectivity matrix 
 connectivity_matrix=skeleton_connectivity_matrix(PFL_3_neurons,DN_neurons)
-neuron.heatmap(connectivity_matrix)
+gplots::heatmap.2(x=connectivity_matrix,cexRow=1,cexCol=1,margins = c(9, 9))
 ```
 <font size=5> Find the number of synapses per connection </font>
 
