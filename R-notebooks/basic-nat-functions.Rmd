@@ -1,0 +1,87 @@
+---
+title: "Basic Nat Functions"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(warning=FALSE, message=FALSE)
+library(knitr)
+library(rgl)
+knit_hooks$set(webgl = hook_webgl)
+source('nat-startup.R')
+```
+
+```{r global_options,include=FALSE}
+knitr::opts_chunk$set(warning=FALSE, message=FALSE)
+```
+```{r, include=FALSE}
+rotationMatrix=rbind(c(1,0,0,0),c(0,-1,0,0),c(0,0,-1,0),c(0,0,0,1))
+windowRect=c(1221,231,1767,700)
+```
+
+<font size=5> Registering a light-level tracing</font>
+
+First, load in the light-level tracing. This tracing was generated using the [Simple Neurite Tracer](https://imagej.net/Simple_Neurite_Tracer) plugin in Fiji and saved as a .swc file 
+```{r lighttracing,webgl=TRUE,echo=TRUE,results='hide'}
+neuronTracing <- read.neuron('data/Namiki_tracing_L_2.swc',class="neuron")
+open3d(userMatrix=rotationMatrix,windowRect=windowRect,zoom=0.7)
+plot3d(neuronTracing,lwd=3,col='black',WithNodes=FALSE)
+```
+```{r,include=FALSE}
+clear3d()
+```
+Next, load in the regisration text file generated through [CMTK](https://www.nitrc.org/projects/cmtk/) to register your neuron into the desired template brain space. Apply this transformation to your tracing using <b>xform</b>
+```{r registration,webgl=TRUE,echo=TRUE,results='hide'}
+reg <- as.cmtkreg('data/Namiki_Registration_JFRC2013.txt')
+registeredNeuron <- xform(neuronTracing, reg)
+
+#Plot neuron along with registered brain template 
+open3d(userMatrix=rotationMatrix,windowRect=windowRect,zoom=0.7)
+plot3d(registeredNeuron,lwd=3,col='black',WithNodes=FALSE)
+plot3d(JFRC2013)
+#save the registered neuron to a .swc file 
+write.neuron(registeredNeuron,'data/registeredNeuron_JFRC2013',format='swc')
+```
+```{r,include=FALSE}
+clear3d()
+```
+<font size=5> Transform a neuron between template brains</font>
+
+Once a neuron is registered to a standard template brain, it can be transformed into another template brain space. A graph of all available tempalte brains and their transformations are shown below: 
+<img src="images/bridginggraph.png"/>
+
+The function [xform_brain](http://natverse.org/nat.templatebrains/reference/xform_brain.html) is used to complete this transformation
+```{r jfrc2, webgl=TRUE, echo=TRUE,results='hide'}
+#transform neuron from JFRC2013 template brain space to JFRC2 template brain space 
+#sample=template brain that the neuron is currently registered to 
+#reference= template brain that the neuron will be transformed into
+neuron_JFRC2=xform_brain(registeredNeuron,sample=JFRC2013,reference=JFRC2)
+
+#plot the neuron with its new template brain
+open3d(userMatrix=rotationMatrix,windowRect=windowRect,zoom=0.7)
+plot3d(neuron_JFRC2,lwd=3,col='black',WithNodes=FALSE)
+plot3d(JFRC2)
+```
+```{r,include=FALSE}
+clear3d()
+```
+<font size=5> Working with FlyCircuit data </font>
+
+Through the [flycircuit](http://natverse.org/flycircuit/) package, you can work with FlyCircuit skeletons in R. These skeletons can be manipulated like any other neuron object using the suite of natverse tools. 
+
+To read in a flycircuit neuron, query the flycircuit database with your desired flycircuit id. (Note: the flycircuit skeletons fetched this way are registered to the JFRC2 template brain ) 
+```{r flycircuit,webgl=TRUE,echo=TRUE,results='hide'}
+  flycircuit_id <- flycircuit::fc_idid('fru-M-100201')
+  query <- sprintf(
+    "http://www.virtualflybrain.org/data/VFB/i/%04d/%04d/volume.swc",
+    flycircuit_id %/% 1e4,
+    flycircuit_id %% 1e4
+  )
+  flycircuit_neuron=read.neurons(query, neuronnames = flycircuit::fc_neuron('fru-F-000100'))
+  
+  #plot flycircuit neuron 
+  open3d(userMatrix=rotationMatrix,windowRect=windowRect,zoom=0.7)
+  plot3d(flycircuit_neuron,lwd=3,col='black',WithNodes=FALSE)
+  plot3d(JFRC2)
+
+```
+
