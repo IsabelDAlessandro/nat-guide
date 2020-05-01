@@ -340,39 +340,10 @@ plot3d(FAFB)</code></pre>
 <p><img src="images/A2_synapses.png"/></p>
 <p>Synapses can be grouped based on brain region using <a href="https://jefferislab.github.io/catnat/reference/inside_neuropils.html">inside_neuropils</a></p>
 <pre class="r"><code>DNa02=read.neurons.catmaid(12526673)</code></pre>
-<p>First, grouping the presynaptic inputs by region, we get:</p>
-<pre class="r"><code>pre_neuropils = inside_neuropils(DNa02,brain = FAFB14NP.surf, &quot;PRE&quot;)
+<p>First, grouping the presynaptic partners of our neuron by brain region, we get:</p>
+<pre class="r"><code>#Note: here the &#39;POST&#39; tag indicates that our neuron is postsynaptic to the input neurons being found 
+pre_neuropils = inside_neuropils(DNa02,brain = FAFB14NP.surf, &quot;POST&quot;)
 pre_neuropils</code></pre>
-<pre><code>## $`12526673`
-##    AME_R     LO_R       NO     BU_R       PB     LH_R    LAL_R      SAD 
-##        0        0        0        0        0        0        0        0 
-##    CAN_R   AMMC_R    ICL_R    VES_R     IB_R    ATL_R    CRE_R MB_PED_R 
-##        0        0        0        0        0        0        0        0 
-##  MB_VL_R  MB_ML_R    FLA_R    LOP_R       EB     AL_R     ME_R       FB 
-##        0        0        0        0        0        0        0        0 
-##    SLP_R    SIP_R    SMP_R   AVLP_R   PVLP_R    WED_R    PLP_R   AOTU_R 
-##        0        0        0        0        0        0        0        0 
-##    GOR_R  MB_CA_R    SPS_R    IPS_R    SCL_R    EPA_R      GNG      PRW 
-##        0        0        0      206        0        0      127        0 
-##     GA_R    AME_L     LO_L     BU_L     LH_L    LAL_L    CAN_L   AMMC_L 
-##        0        0        0        0        0        0        0        0 
-##    ICL_L    VES_L     IB_L    ATL_L    CRE_L MB_PED_L  MB_VL_L  MB_ML_L 
-##        0        0        0        0        0        0        0        0 
-##    FLA_L    LOP_L     AL_L     ME_L    SLP_L    SIP_L    SMP_L   AVLP_L 
-##        0        0        0        0        0        0        0        0 
-##   PVLP_L    WED_L    PLP_L   AOTU_L    GOR_L  MB_CA_L    SPS_L    IPS_L 
-##        0        0        0        0        0        0        0        0 
-##    SCL_L    EPA_L     GA_L 
-##        0        0        0 
-## 
-## attr(,&quot;class&quot;)
-## [1] &quot;neuronlist&quot; &quot;list&quot;      
-## attr(,&quot;df&quot;)
-##          pid     skid     name
-## 12526673   1 12526673 DNa02_AL</code></pre>
-<p>Next,grouping the postsyanptic inputs by region, we get:</p>
-<pre class="r"><code>post_neuropils= inside_neuropils(DNa02,brain = FAFB14NP.surf, &quot;POST&quot;)
-post_neuropils</code></pre>
 <pre><code>## $`12526673`
 ##    AME_R     LO_R       NO     BU_R       PB     LH_R    LAL_R      SAD 
 ##        0        0        0        0        0        0     3209       12 
@@ -400,18 +371,48 @@ post_neuropils</code></pre>
 ## attr(,&quot;df&quot;)
 ##          pid     skid     name
 ## 12526673   1 12526673 DNa02_AL</code></pre>
+<p>Next,grouping the postsyanptic partners of our neuron by brain region, we get:</p>
+<pre class="r"><code>#Note: here the &#39;PRE&#39; tag indicates that our neuron is presyanptic to the output neurons being found 
+post_neuropils= inside_neuropils(DNa02,brain = FAFB14NP.surf, &quot;PRE&quot;)
+post_neuropils</code></pre>
+<pre><code>## $`12526673`
+##    AME_R     LO_R       NO     BU_R       PB     LH_R    LAL_R      SAD 
+##        0        0        0        0        0        0        0        0 
+##    CAN_R   AMMC_R    ICL_R    VES_R     IB_R    ATL_R    CRE_R MB_PED_R 
+##        0        0        0        0        0        0        0        0 
+##  MB_VL_R  MB_ML_R    FLA_R    LOP_R       EB     AL_R     ME_R       FB 
+##        0        0        0        0        0        0        0        0 
+##    SLP_R    SIP_R    SMP_R   AVLP_R   PVLP_R    WED_R    PLP_R   AOTU_R 
+##        0        0        0        0        0        0        0        0 
+##    GOR_R  MB_CA_R    SPS_R    IPS_R    SCL_R    EPA_R      GNG      PRW 
+##        0        0        0      206        0        0      127        0 
+##     GA_R    AME_L     LO_L     BU_L     LH_L    LAL_L    CAN_L   AMMC_L 
+##        0        0        0        0        0        0        0        0 
+##    ICL_L    VES_L     IB_L    ATL_L    CRE_L MB_PED_L  MB_VL_L  MB_ML_L 
+##        0        0        0        0        0        0        0        0 
+##    FLA_L    LOP_L     AL_L     ME_L    SLP_L    SIP_L    SMP_L   AVLP_L 
+##        0        0        0        0        0        0        0        0 
+##   PVLP_L    WED_L    PLP_L   AOTU_L    GOR_L  MB_CA_L    SPS_L    IPS_L 
+##        0        0        0        0        0        0        0        0 
+##    SCL_L    EPA_L     GA_L 
+##        0        0        0 
+## 
+## attr(,&quot;class&quot;)
+## [1] &quot;neuronlist&quot; &quot;list&quot;      
+## attr(,&quot;df&quot;)
+##          pid     skid     name
+## 12526673   1 12526673 DNa02_AL</code></pre>
 <p>Plotting the results of this analysis using a barplot</p>
 <pre class="r"><code>pre_neuropils_df=data.frame(names=names(pre_neuropils$`12526673`),counts=as.numeric(unlist(pre_neuropils)))
 pre_neuropils_df=subset(pre_neuropils_df,counts&gt;0)
 post_neuropils_df=data.frame(names=names(post_neuropils$`12526673`),counts=as.numeric(unlist(post_neuropils)))
 post_neuropils_df=subset(post_neuropils_df,counts&gt;6)
-all_neuropils_df=merge(post_neuropils_df,pre_neuropils_df,by=&#39;names&#39;,all=TRUE)
+all_neuropils_df=merge(pre_neuropils_df,post_neuropils_df,by=&#39;names&#39;,all=TRUE)
 all_neuropils_df.m=melt(all_neuropils_df, id.vars=&#39;names&#39;)
 all_neuropils_df.m=all_neuropils_df.m[order(-all_neuropils_df.m$value),]
 all_neuropils_df.m$Groups &lt;- factor(all_neuropils_df.m$names, levels = all_neuropils_df[order(all_neuropils_df$counts.x),]$names)
 ggplot(all_neuropils_df.m,aes(fill=variable,x=Groups,y=value))+geom_bar(stat=&quot;identity&quot;)+
-  coord_flip()+theme_bw()+scale_x_discrete(name =&quot;Region&quot;)+ ylab(&#39;Synapse Count&#39;)+theme(legend.position=&quot;none&quot;)+scale_fill_manual(values=c(&quot;blue&quot;,&quot;red&quot;))
-ggsave(&#39;images/A2_connections_grouped.png&#39;,device=&#39;png&#39;)</code></pre>
+  coord_flip()+theme_bw()+scale_x_discrete(name =&quot;Region&quot;)+ ylab(&#39;Synapse Count&#39;)+theme(legend.position=&quot;none&quot;)+scale_fill_manual(values=c(&quot;red&quot;,&quot;blue&quot;))</code></pre>
 <p><img src="images/A2_connections_grouped.png"/></p>
 <p><font size=5> Get synaptic partners</font></p>
 <p>We can also fetch the skeletons of the synaptic partners</p>
@@ -441,7 +442,7 @@ DN_neurons=read.neurons.catmaid(DN_neuron_ids)
 
 #generate connectivity matrix 
 connectivity_matrix=skeleton_connectivity_matrix(PFL_3_neurons,DN_neurons)
-neuron.heatmap(connectivity_matrix)</code></pre>
+gplots::heatmap.2(x=connectivity_matrix,cexRow=1,cexCol=1,margins = c(9, 9))</code></pre>
 <p><img src="images/PFL3_DN_connectivity_heatmap.png"/></p>
 <p><font size=5> Find the number of synapses per connection </font></p>
 <p>Each synaptic connection has a unique <b>connector_id</b>. Here, we find all incoming and outgoing partners of our neuron of interest, and list the partners with the greatest numbers of synaptic connections. The top incoming partners(red), the top outgoing partners(blue), and our neuron of interest(black) are plotted below.</p>

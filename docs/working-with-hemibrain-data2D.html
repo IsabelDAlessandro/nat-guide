@@ -311,37 +311,68 @@ $(document).ready(function () {
 <p>There are many ways to find a neuron, including by name, bodyid, or ROI innervation. Here, we find all hemibrain neurons with names matching ‘R1’</p>
 <pre class="r"><code>R1.info = neuprint_search(&quot;R1_.*&quot;)
 R1.info</code></pre>
-<pre><code>##        bodyid pre post status    statusLabel cropped                name type cellBodyFiber    voxels  soma
-## 1  1322133296 210  431 Traced Roughly traced   FALSE R1_a(ring)(AVM07)_L R1_a          &lt;NA&gt; 235493563 FALSE
-## 2  1291103485 189  368 Traced Roughly traced   FALSE R1_a(ring)(AVM07)_L R1_a          &lt;NA&gt; 224315155 FALSE
-## 3  1322133768 193  396 Traced Roughly traced   FALSE R1_a(ring)(AVM07)_L R1_a          &lt;NA&gt; 226333093 FALSE
-## 4  1291444314 215  502 Traced Roughly traced   FALSE R1_a(ring)(AVM07)_L R1_a          &lt;NA&gt; 283604137 FALSE
-## 5  1352823209 207  466 Traced Roughly traced   FALSE R1_a(ring)(AVM07)_L R1_a          &lt;NA&gt; 268498123 FALSE
-## 6  1322129437 212  388 Traced Roughly traced   FALSE R1_a(ring)(AVM07)_L R1_a          &lt;NA&gt; 232923461 FALSE
-## 7  1322133825 195  351 Traced Roughly traced   FALSE R1_a(ring)(AVM07)_L R1_a          &lt;NA&gt; 222327266 FALSE
-## 8  5813059835 217  459 Traced Roughly traced   FALSE R1_a(ring)(AVM07)_L R1_a          &lt;NA&gt; 220977241 FALSE
-## 9  1294414279 214  758 Traced         Traced   FALSE R1_a(ring)(AVM07)_R R1_a          igL2 494221314  TRUE
-## 10 1291435551 214  633 Traced         Traced   FALSE R1_a(ring)(AVM07)_R R1_a          igL2 442178292  TRUE
-## 11 1322129781 178  560 Traced         Traced   FALSE R1_a(ring)(AVM07)_R R1_a          igL2 406452064  TRUE
-## 12 1355806197 203  599 Traced         Traced   FALSE R1_a(ring)(AVM07)_R R1_a          igL2 432301213  TRUE
-## 13 1322133858 200  567 Traced         Traced   FALSE R1_a(ring)(AVM07)_R R1_a          igL2 392021268  TRUE
-## 14 1322470462 212  631 Traced         Traced   FALSE R1_a(ring)(AVM07)_R R1_a          igL2 459817081  TRUE
-## 15 1322470368 211  703 Traced         Traced   FALSE R1_a(ring)(AVM07)_R R1_a          igL2 507360636  TRUE
-## 16 1322466938 215  712 Traced         Traced   FALSE R1_a(ring)(AVM07)_R R1_a          igL2 446424902  TRUE
-## 17 1291094742 233  571 Traced Roughly traced   FALSE R1_b(ring)(AVM07)_L R1_b          &lt;NA&gt; 275733636 FALSE
-## 18 1322129724 201  482 Traced Roughly traced   FALSE R1_b(ring)(AVM07)_L R1_b          &lt;NA&gt; 244179816 FALSE
-## 19 1322133531 189  468 Traced Roughly traced   FALSE R1_b(ring)(AVM07)_L R1_b          &lt;NA&gt; 234032804 FALSE
-## 20 1322129730 202  509 Traced Roughly traced   FALSE R1_b(ring)(AVM07)_L R1_b          &lt;NA&gt; 234533589 FALSE
-## 21 1322133891 203  499 Traced Roughly traced   FALSE R1_b(ring)(AVM07)_L R1_b          &lt;NA&gt; 281711914 FALSE
-## 22 1322142804  88  158 Traced Roughly traced   FALSE R1_b(ring)(AVM07)_L R1_b          &lt;NA&gt; 103617394 FALSE
-## 23 1353168228  82  211 Traced Roughly traced   FALSE R1_b(ring)(AVM07)_L R1_b          &lt;NA&gt; 104693827 FALSE
-## 24 1322137688 199  753 Traced         Traced   FALSE R1_b(ring)(AVM07)_R R1_b          igL2 428829246  TRUE
-## 25 1294082002 250  793 Traced         Traced   FALSE R1_b(ring)(AVM07)_R R1_b          igL2 515920224  TRUE
-## 26 1291094620 240  762 Traced         Traced   FALSE R1_b(ring)(AVM07)_R R1_b          igL2 511574757  TRUE
-## 27 1291099014 211  796 Traced         Traced   FALSE R1_b(ring)(AVM07)_R R1_b          igL2 484088216  TRUE
-## 28 1291435693 242  821 Traced         Traced   FALSE R1_b(ring)(AVM07)_R R1_b          igL2 512326322  TRUE
-## 29 1322138079 216  669 Traced         Traced   FALSE R1_b(ring)(AVM07)_R R1_b          igL2 455658404  TRUE
-## 30 1322129610 218  778 Traced         Traced   FALSE R1_b(ring)(AVM07)_R R1_b          igL2 451779426  TRUE</code></pre>
+<pre><code>##        bodyid pre post status    statusLabel cropped                name type
+## 1  1322133296 210  431 Traced Roughly traced   FALSE R1_a(ring)(AVM07)_L R1_a
+## 2  1291103485 189  368 Traced Roughly traced   FALSE R1_a(ring)(AVM07)_L R1_a
+## 3  1322133768 193  396 Traced Roughly traced   FALSE R1_a(ring)(AVM07)_L R1_a
+## 4  1291444314 215  502 Traced Roughly traced   FALSE R1_a(ring)(AVM07)_L R1_a
+## 5  1352823209 207  466 Traced Roughly traced   FALSE R1_a(ring)(AVM07)_L R1_a
+## 6  1322129437 212  388 Traced Roughly traced   FALSE R1_a(ring)(AVM07)_L R1_a
+## 7  1322133825 195  351 Traced Roughly traced   FALSE R1_a(ring)(AVM07)_L R1_a
+## 8  5813059835 217  459 Traced Roughly traced   FALSE R1_a(ring)(AVM07)_L R1_a
+## 9  1294414279 214  758 Traced         Traced   FALSE R1_a(ring)(AVM07)_R R1_a
+## 10 1291435551 214  633 Traced         Traced   FALSE R1_a(ring)(AVM07)_R R1_a
+## 11 1322129781 178  560 Traced         Traced   FALSE R1_a(ring)(AVM07)_R R1_a
+## 12 1355806197 203  599 Traced         Traced   FALSE R1_a(ring)(AVM07)_R R1_a
+## 13 1322133858 200  567 Traced         Traced   FALSE R1_a(ring)(AVM07)_R R1_a
+## 14 1322470462 212  631 Traced         Traced   FALSE R1_a(ring)(AVM07)_R R1_a
+## 15 1322470368 211  703 Traced         Traced   FALSE R1_a(ring)(AVM07)_R R1_a
+## 16 1322466938 215  712 Traced         Traced   FALSE R1_a(ring)(AVM07)_R R1_a
+## 17 1291094742 233  571 Traced Roughly traced   FALSE R1_b(ring)(AVM07)_L R1_b
+## 18 1322129724 201  482 Traced Roughly traced   FALSE R1_b(ring)(AVM07)_L R1_b
+## 19 1322133531 189  468 Traced Roughly traced   FALSE R1_b(ring)(AVM07)_L R1_b
+## 20 1322129730 202  509 Traced Roughly traced   FALSE R1_b(ring)(AVM07)_L R1_b
+## 21 1322133891 203  499 Traced Roughly traced   FALSE R1_b(ring)(AVM07)_L R1_b
+## 22 1322142804  88  158 Traced Roughly traced   FALSE R1_b(ring)(AVM07)_L R1_b
+## 23 1353168228  82  211 Traced Roughly traced   FALSE R1_b(ring)(AVM07)_L R1_b
+## 24 1322137688 199  753 Traced         Traced   FALSE R1_b(ring)(AVM07)_R R1_b
+## 25 1294082002 250  793 Traced         Traced   FALSE R1_b(ring)(AVM07)_R R1_b
+## 26 1291094620 240  762 Traced         Traced   FALSE R1_b(ring)(AVM07)_R R1_b
+## 27 1291099014 211  796 Traced         Traced   FALSE R1_b(ring)(AVM07)_R R1_b
+## 28 1291435693 242  821 Traced         Traced   FALSE R1_b(ring)(AVM07)_R R1_b
+## 29 1322138079 216  669 Traced         Traced   FALSE R1_b(ring)(AVM07)_R R1_b
+## 30 1322129610 218  778 Traced         Traced   FALSE R1_b(ring)(AVM07)_R R1_b
+##    cellBodyFiber    voxels  soma
+## 1           &lt;NA&gt; 235493563 FALSE
+## 2           &lt;NA&gt; 224315155 FALSE
+## 3           &lt;NA&gt; 226333093 FALSE
+## 4           &lt;NA&gt; 283604137 FALSE
+## 5           &lt;NA&gt; 268498123 FALSE
+## 6           &lt;NA&gt; 232923461 FALSE
+## 7           &lt;NA&gt; 222327266 FALSE
+## 8           &lt;NA&gt; 220977241 FALSE
+## 9           igL2 494221314  TRUE
+## 10          igL2 442178292  TRUE
+## 11          igL2 406452064  TRUE
+## 12          igL2 432301213  TRUE
+## 13          igL2 392021268  TRUE
+## 14          igL2 459817081  TRUE
+## 15          igL2 507360636  TRUE
+## 16          igL2 446424902  TRUE
+## 17          &lt;NA&gt; 275733636 FALSE
+## 18          &lt;NA&gt; 244179816 FALSE
+## 19          &lt;NA&gt; 234032804 FALSE
+## 20          &lt;NA&gt; 234533589 FALSE
+## 21          &lt;NA&gt; 281711914 FALSE
+## 22          &lt;NA&gt; 103617394 FALSE
+## 23          &lt;NA&gt; 104693827 FALSE
+## 24          igL2 428829246  TRUE
+## 25          igL2 515920224  TRUE
+## 26          igL2 511574757  TRUE
+## 27          igL2 484088216  TRUE
+## 28          igL2 512326322  TRUE
+## 29          igL2 455658404  TRUE
+## 30          igL2 451779426  TRUE</code></pre>
 <pre class="r"><code>#read in the skeletons as neurons 
 R1_neurons = neuprint_read_neurons(R1.info$bodyid)
 open3d(userMatrix=hemibrainMatrix,windowRect=windowRect,zoom=0.7)
@@ -350,36 +381,56 @@ plot3d(R1_neurons,lwd=2,WithNodes=FALSE,soma=TRUE)</code></pre>
 <p><font size=5> Fetch brain regions </font></p>
 <p>You can see a list of all available brain region meshes using the following command(*Note: not all of these meshes are currently available for download):</p>
 <pre class="r"><code>neuprint_ROIs()</code></pre>
-<pre><code>##   [1] &quot;a&#39;1(R)&quot;            &quot;a&#39;2(R)&quot;            &quot;a&#39;3(R)&quot;            &quot;a&#39;L(L)&quot;            &quot;a&#39;L(R)&quot;           
-##   [6] &quot;a1(R)&quot;             &quot;a2(R)&quot;             &quot;a3(R)&quot;             &quot;AB(L)&quot;             &quot;AB(R)&quot;            
-##  [11] &quot;aL(L)&quot;             &quot;AL(L)&quot;             &quot;aL(R)&quot;             &quot;AL(R)&quot;             &quot;AME(R)&quot;           
-##  [16] &quot;AMMC&quot;              &quot;AOT(R)&quot;            &quot;AOTU(R)&quot;           &quot;ATL(L)&quot;            &quot;ATL(R)&quot;           
-##  [21] &quot;AVLP(R)&quot;           &quot;b&#39;1(R)&quot;            &quot;b&#39;2(R)&quot;            &quot;b&#39;L(L)&quot;            &quot;b&#39;L(R)&quot;           
-##  [26] &quot;b1(R)&quot;             &quot;b2(R)&quot;             &quot;bL(L)&quot;             &quot;bL(R)&quot;             &quot;BU(L)&quot;            
-##  [31] &quot;BU(R)&quot;             &quot;CA(L)&quot;             &quot;CA(R)&quot;             &quot;CAN(R)&quot;            &quot;CRE(-ROB,-RUB)(R)&quot;
-##  [36] &quot;CRE(L)&quot;            &quot;CRE(R)&quot;            &quot;CX&quot;                &quot;dACA(R)&quot;           &quot;EB&quot;               
-##  [41] &quot;EBr1&quot;              &quot;EBr2r4&quot;            &quot;EBr3am&quot;            &quot;EBr3d&quot;             &quot;EBr3pw&quot;           
-##  [46] &quot;EBr5&quot;              &quot;EBr6&quot;              &quot;EPA(L)&quot;            &quot;EPA(R)&quot;            &quot;FB&quot;               
-##  [51] &quot;FBl1&quot;              &quot;FBl2&quot;              &quot;FBl3&quot;              &quot;FBl4&quot;              &quot;FBl5&quot;             
-##  [56] &quot;FBl6&quot;              &quot;FBl7&quot;              &quot;FBl8&quot;              &quot;FBl9&quot;              &quot;FLA(R)&quot;           
-##  [61] &quot;g1(R)&quot;             &quot;g2(R)&quot;             &quot;g3(R)&quot;             &quot;g4(R)&quot;             &quot;g5(R)&quot;            
-##  [66] &quot;GA(R)&quot;             &quot;GC&quot;                &quot;GF(R)&quot;             &quot;gL(L)&quot;             &quot;gL(R)&quot;            
-##  [71] &quot;GNG&quot;               &quot;GOR(L)&quot;            &quot;GOR(R)&quot;            &quot;hemibrain&quot;         &quot;IB&quot;               
-##  [76] &quot;ICL(L)&quot;            &quot;ICL(R)&quot;            &quot;INP&quot;               &quot;IPS(R)&quot;            &quot;lACA(R)&quot;          
-##  [81] &quot;LAL(-GA)(R)&quot;       &quot;LAL(L)&quot;            &quot;LAL(R)&quot;            &quot;LH(R)&quot;             &quot;LO(R)&quot;            
-##  [86] &quot;LOP(R)&quot;            &quot;LX(L)&quot;             &quot;LX(R)&quot;             &quot;mALT(L)&quot;           &quot;mALT(R)&quot;          
-##  [91] &quot;MB(+ACA)(R)&quot;       &quot;MB(L)&quot;             &quot;MB(R)&quot;             &quot;ME(R)&quot;             &quot;NO&quot;               
-##  [96] &quot;NO(L)&quot;             &quot;NO(R)&quot;             &quot;NO1(L)&quot;            &quot;NO1(R)&quot;            &quot;NO2(L)&quot;           
-## [101] &quot;NO2(R)&quot;            &quot;NO3(L)&quot;            &quot;NO3(R)&quot;            &quot;OL(R)&quot;             &quot;PB&quot;               
-## [106] &quot;PB(L1)&quot;            &quot;PB(L2)&quot;            &quot;PB(L3)&quot;            &quot;PB(L4)&quot;            &quot;PB(L5)&quot;           
-## [111] &quot;PB(L6)&quot;            &quot;PB(L7)&quot;            &quot;PB(L8)&quot;            &quot;PB(L9)&quot;            &quot;PB(R1)&quot;           
-## [116] &quot;PB(R2)&quot;            &quot;PB(R3)&quot;            &quot;PB(R4)&quot;            &quot;PB(R5)&quot;            &quot;PB(R6)&quot;           
-## [121] &quot;PB(R7)&quot;            &quot;PB(R8)&quot;            &quot;PB(R9)&quot;            &quot;PED(R)&quot;            &quot;PENP&quot;             
-## [126] &quot;PLP(R)&quot;            &quot;POC&quot;               &quot;PRW&quot;               &quot;PVLP(R)&quot;           &quot;ROB(R)&quot;           
-## [131] &quot;RUB(L)&quot;            &quot;RUB(R)&quot;            &quot;SAD&quot;               &quot;SAD(-AMMC)&quot;        &quot;SCL(L)&quot;           
-## [136] &quot;SCL(R)&quot;            &quot;SIP(L)&quot;            &quot;SIP(R)&quot;            &quot;SLP(R)&quot;            &quot;SMP(L)&quot;           
-## [141] &quot;SMP(R)&quot;            &quot;SNP(L)&quot;            &quot;SNP(R)&quot;            &quot;SPS(L)&quot;            &quot;SPS(R)&quot;           
-## [146] &quot;vACA(R)&quot;           &quot;VES(L)&quot;            &quot;VES(R)&quot;            &quot;VLNP(R)&quot;           &quot;VMNP&quot;             
+<pre><code>##   [1] &quot;a&#39;1(R)&quot;            &quot;a&#39;2(R)&quot;            &quot;a&#39;3(R)&quot;           
+##   [4] &quot;a&#39;L(L)&quot;            &quot;a&#39;L(R)&quot;            &quot;a1(R)&quot;            
+##   [7] &quot;a2(R)&quot;             &quot;a3(R)&quot;             &quot;AB(L)&quot;            
+##  [10] &quot;AB(R)&quot;             &quot;aL(L)&quot;             &quot;AL(L)&quot;            
+##  [13] &quot;aL(R)&quot;             &quot;AL(R)&quot;             &quot;AME(R)&quot;           
+##  [16] &quot;AMMC&quot;              &quot;AOT(R)&quot;            &quot;AOTU(R)&quot;          
+##  [19] &quot;ATL(L)&quot;            &quot;ATL(R)&quot;            &quot;AVLP(R)&quot;          
+##  [22] &quot;b&#39;1(R)&quot;            &quot;b&#39;2(R)&quot;            &quot;b&#39;L(L)&quot;           
+##  [25] &quot;b&#39;L(R)&quot;            &quot;b1(R)&quot;             &quot;b2(R)&quot;            
+##  [28] &quot;bL(L)&quot;             &quot;bL(R)&quot;             &quot;BU(L)&quot;            
+##  [31] &quot;BU(R)&quot;             &quot;CA(L)&quot;             &quot;CA(R)&quot;            
+##  [34] &quot;CAN(R)&quot;            &quot;CRE(-ROB,-RUB)(R)&quot; &quot;CRE(L)&quot;           
+##  [37] &quot;CRE(R)&quot;            &quot;CX&quot;                &quot;dACA(R)&quot;          
+##  [40] &quot;EB&quot;                &quot;EBr1&quot;              &quot;EBr2r4&quot;           
+##  [43] &quot;EBr3am&quot;            &quot;EBr3d&quot;             &quot;EBr3pw&quot;           
+##  [46] &quot;EBr5&quot;              &quot;EBr6&quot;              &quot;EPA(L)&quot;           
+##  [49] &quot;EPA(R)&quot;            &quot;FB&quot;                &quot;FBl1&quot;             
+##  [52] &quot;FBl2&quot;              &quot;FBl3&quot;              &quot;FBl4&quot;             
+##  [55] &quot;FBl5&quot;              &quot;FBl6&quot;              &quot;FBl7&quot;             
+##  [58] &quot;FBl8&quot;              &quot;FBl9&quot;              &quot;FLA(R)&quot;           
+##  [61] &quot;g1(R)&quot;             &quot;g2(R)&quot;             &quot;g3(R)&quot;            
+##  [64] &quot;g4(R)&quot;             &quot;g5(R)&quot;             &quot;GA(R)&quot;            
+##  [67] &quot;GC&quot;                &quot;GF(R)&quot;             &quot;gL(L)&quot;            
+##  [70] &quot;gL(R)&quot;             &quot;GNG&quot;               &quot;GOR(L)&quot;           
+##  [73] &quot;GOR(R)&quot;            &quot;hemibrain&quot;         &quot;IB&quot;               
+##  [76] &quot;ICL(L)&quot;            &quot;ICL(R)&quot;            &quot;INP&quot;              
+##  [79] &quot;IPS(R)&quot;            &quot;lACA(R)&quot;           &quot;LAL(-GA)(R)&quot;      
+##  [82] &quot;LAL(L)&quot;            &quot;LAL(R)&quot;            &quot;LH(R)&quot;            
+##  [85] &quot;LO(R)&quot;             &quot;LOP(R)&quot;            &quot;LX(L)&quot;            
+##  [88] &quot;LX(R)&quot;             &quot;mALT(L)&quot;           &quot;mALT(R)&quot;          
+##  [91] &quot;MB(+ACA)(R)&quot;       &quot;MB(L)&quot;             &quot;MB(R)&quot;            
+##  [94] &quot;ME(R)&quot;             &quot;NO&quot;                &quot;NO(L)&quot;            
+##  [97] &quot;NO(R)&quot;             &quot;NO1(L)&quot;            &quot;NO1(R)&quot;           
+## [100] &quot;NO2(L)&quot;            &quot;NO2(R)&quot;            &quot;NO3(L)&quot;           
+## [103] &quot;NO3(R)&quot;            &quot;OL(R)&quot;             &quot;PB&quot;               
+## [106] &quot;PB(L1)&quot;            &quot;PB(L2)&quot;            &quot;PB(L3)&quot;           
+## [109] &quot;PB(L4)&quot;            &quot;PB(L5)&quot;            &quot;PB(L6)&quot;           
+## [112] &quot;PB(L7)&quot;            &quot;PB(L8)&quot;            &quot;PB(L9)&quot;           
+## [115] &quot;PB(R1)&quot;            &quot;PB(R2)&quot;            &quot;PB(R3)&quot;           
+## [118] &quot;PB(R4)&quot;            &quot;PB(R5)&quot;            &quot;PB(R6)&quot;           
+## [121] &quot;PB(R7)&quot;            &quot;PB(R8)&quot;            &quot;PB(R9)&quot;           
+## [124] &quot;PED(R)&quot;            &quot;PENP&quot;              &quot;PLP(R)&quot;           
+## [127] &quot;POC&quot;               &quot;PRW&quot;               &quot;PVLP(R)&quot;          
+## [130] &quot;ROB(R)&quot;            &quot;RUB(L)&quot;            &quot;RUB(R)&quot;           
+## [133] &quot;SAD&quot;               &quot;SAD(-AMMC)&quot;        &quot;SCL(L)&quot;           
+## [136] &quot;SCL(R)&quot;            &quot;SIP(L)&quot;            &quot;SIP(R)&quot;           
+## [139] &quot;SLP(R)&quot;            &quot;SMP(L)&quot;            &quot;SMP(R)&quot;           
+## [142] &quot;SNP(L)&quot;            &quot;SNP(R)&quot;            &quot;SPS(L)&quot;           
+## [145] &quot;SPS(R)&quot;            &quot;vACA(R)&quot;           &quot;VES(L)&quot;           
+## [148] &quot;VES(R)&quot;            &quot;VLNP(R)&quot;           &quot;VMNP&quot;             
 ## [151] &quot;WED(R)&quot;</code></pre>
 <p>To fetch these messages, use <a href="http://natverse.org/neuprintr/reference/neuprint_ROI_mesh.html">neuprint_ROI_mesh</a>:</p>
 <pre class="r"><code>#plot our neurons of interest 
@@ -451,7 +502,7 @@ R1_all_partners.m=melt(R1_all_partners, id.vars=&#39;type&#39;)
 R1_all_partners.m=R1_all_partners.m[order(-R1_all_partners.m$value),]
 R1_all_partners.m$Groups &lt;- factor(R1_all_partners.m$type, levels = R1_all_partners[order(R1_all_partners$freq.x),]$type)
 plot&lt;-ggplot(R1_all_partners.m,aes(fill=variable,x=Groups,y=value))+geom_bar(stat=&quot;identity&quot;)+
-  coord_flip()+theme_bw()+scale_x_discrete(name =&quot;Region&quot;)+ ylab(&#39;Synapse Count&#39;)+theme(legend.position=&quot;none&quot;)+scale_fill_manual(values=c(&quot;blue&quot;,&quot;red&quot;))
+  coord_flip()+theme_bw()+scale_x_discrete(name =&quot;Region&quot;)+ ylab(&#39;Synapse Count&#39;)+theme(legend.position=&quot;none&quot;)+scale_fill_manual(values=c(&quot;red&quot;,&quot;blue&quot;))
 print(plot)</code></pre>
 <p><img src="images/R1_all_synapses_barplot.png"/></p>
 <p>We can also look only at the synaptic partners which are common to the set of all R1 neurons using neuprint_common_connectivity</p>
