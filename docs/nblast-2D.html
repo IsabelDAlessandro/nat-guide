@@ -1,0 +1,486 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+
+
+
+<title>NBLAST</title>
+
+<script src="site_libs/jquery-1.11.3/jquery.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="site_libs/bootstrap-3.3.5/css/bootstrap.min.css" rel="stylesheet" />
+<script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<script src="site_libs/navigation-1.1/tabsets.js"></script>
+<link href="site_libs/highlightjs-9.12.0/default.css" rel="stylesheet" />
+<script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
+
+<style type="text/css">code{white-space: pre;}</style>
+<style type="text/css">
+  pre:not([class]) {
+    background-color: white;
+  }
+</style>
+<script type="text/javascript">
+if (window.hljs) {
+  hljs.configure({languages: []});
+  hljs.initHighlightingOnLoad();
+  if (document.readyState && document.readyState === "complete") {
+    window.setTimeout(function() { hljs.initHighlighting(); }, 0);
+  }
+}
+</script>
+
+
+
+<style type="text/css">
+h1 {
+  font-size: 34px;
+}
+h1.title {
+  font-size: 38px;
+}
+h2 {
+  font-size: 30px;
+}
+h3 {
+  font-size: 24px;
+}
+h4 {
+  font-size: 18px;
+}
+h5 {
+  font-size: 16px;
+}
+h6 {
+  font-size: 12px;
+}
+.table th:not([align]) {
+  text-align: left;
+}
+</style>
+
+
+
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+code {
+  color: inherit;
+  background-color: rgba(0, 0, 0, 0.04);
+}
+img {
+  max-width:100%;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+summary {
+  display: list-item;
+}
+</style>
+
+
+<style type="text/css">
+/* padding for bootstrap navbar */
+body {
+  padding-top: 51px;
+  padding-bottom: 40px;
+}
+/* offset scroll position for anchor links (for fixed navbar)  */
+.section h1 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h2 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h3 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h4 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h5 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h6 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.dropdown-submenu {
+  position: relative;
+}
+.dropdown-submenu>.dropdown-menu {
+  top: 0;
+  left: 100%;
+  margin-top: -6px;
+  margin-left: -1px;
+  border-radius: 0 6px 6px 6px;
+}
+.dropdown-submenu:hover>.dropdown-menu {
+  display: block;
+}
+.dropdown-submenu>a:after {
+  display: block;
+  content: " ";
+  float: right;
+  width: 0;
+  height: 0;
+  border-color: transparent;
+  border-style: solid;
+  border-width: 5px 0 5px 5px;
+  border-left-color: #cccccc;
+  margin-top: 5px;
+  margin-right: -10px;
+}
+.dropdown-submenu:hover>a:after {
+  border-left-color: #ffffff;
+}
+.dropdown-submenu.pull-left {
+  float: none;
+}
+.dropdown-submenu.pull-left>.dropdown-menu {
+  left: -100%;
+  margin-left: 10px;
+  border-radius: 6px 0 6px 6px;
+}
+</style>
+
+<script>
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark it active
+  menuAnchor.parent().addClass('active');
+
+  // if it's got a parent navbar menu mark it active as well
+  menuAnchor.closest('li.dropdown').addClass('active');
+});
+</script>
+
+<!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  background: white;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "&#xe258;";
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+  background-color: transparent;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
+<!-- code folding -->
+
+
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
+
+
+
+
+<div class="navbar navbar-default  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">Neuroanatomy Toolbox (nat) guide </a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li>
+  <a href="index.html">Home</a>
+</li>
+<li>
+  <a href="basic-nat-functions.html">Basic Nat Funcions</a>
+</li>
+<li>
+  <a href="nblast-2D.html">NBLAST</a>
+</li>
+<li>
+  <a href="working-with-CATMAID-data2D.html">CATMAID</a>
+</li>
+<li>
+  <a href="working-with-hemibrain-data2D.html">Hemibrain</a>
+</li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div class="fluid-row" id="header">
+
+
+
+<h1 class="title toc-ignore">NBLAST</h1>
+
+</div>
+
+
+<p>The package <a href="http://natverse.org/nat.nblast/">nat.nblast</a> implements the NBLAST neuron similarity algorithm described in <a href="http://doi.org/10.1016/j.neuron.2016.06.012">Costa et al. 2016</a>.</p>
+<p><font size=5> Using NBLAST to assess neuron similarity </font></p>
+<p>NBLAST can be used to assess the similarity between neurons. In this example, NBLAST is used to compare a neuron drawn from a light-level tracing and a neuron drawn from an EM reconstruction (plotted in black and blue, respectively).</p>
+<pre class="r"><code>neuronTracing &lt;- read.neuron(&#39;docs/data/registeredNeuron_JFRC2013.swc&#39;,class=&quot;neuron&quot;)
+A2_EM&lt;- read.neuron(&#39;docs/data/DNa02_01_09_2020.swc&#39;)
+neuronEM&lt;- xform_brain(A2_EM,sample=FAFB, reference = JFRC2013)</code></pre>
+<pre class="r"><code>#plot both neurons 
+open3d(userMatrix=rotationMatrix,windowRect=windowRect,zoom=0.6)
+plot3d(neuronTracing,lwd=3,col=&#39;black&#39;,WithNodes=FALSE)
+plot3d(neuronEM,lwd=3,col=&#39;blue&#39;,WithNodes=FALSE)
+plot3d(JFRC2013)</code></pre>
+<p><img src="images/A2_tracing_EM.png"/></p>
+<pre class="r"><code>all_neurons=neuronlist(neuronTracing,neuronEM)
+nblast_scores=nblast_allbyall(all_neurons,smat = NULL, distance = FALSE)</code></pre>
+<pre><code>## more than 1 point in .CleanupParentArray, choosing first from: 2 3more than 1 point in .CleanupParentArray, choosing first from: 2 3more than 1 point in .CleanupParentArray, choosing first from: 2 3more than 1 point in .CleanupParentArray, choosing first from: 2 3more than 1 point in .CleanupParentArray, choosing first from: 2 3more than 1 point in .CleanupParentArray, choosing first from: 2 3more than 1 point in .CleanupParentArray, choosing first from: 2 3more than 1 point in .CleanupParentArray, choosing first from: 2 3</code></pre>
+<pre><code>##               neuronTracing  neuronEM
+## neuronTracing     1.0000000 0.6352001
+## neuronEM          0.5026174 1.0000000</code></pre>
+<p><font size=5> Using NBLAST to find flycircuit clones </font></p>
+<p>NBLAST can also be used to query databases of neurons based on similarity to your neuron of interest.</p>
+<p>First, load in your neuron of interest</p>
+<pre class="r"><code>g13 &lt;- read.neuron(&#39;docs/data/g13_JFRC2013.swc&#39;,class=&quot;neuron&quot;)</code></pre>
+<pre class="r"><code>open3d(userMatrix=rotationMatrix,windowRect=windowRect,zoom=0.6)
+plot3d(g13,lwd=3,col=&#39;black&#39;,WithNodes=FALSE)</code></pre>
+<p><img src="images/g13_neuron.png"/></p>
+<p>To find flycircuit clones,download the flycircuit data and convert it to a dotprops object(this takes a while but only needs to be done once )</p>
+<pre class="r"><code>fc_download_data(&#39;http://flybrain.mrc-lmb.cam.ac.uk/si/nblast/flycircuit/allbyallblastcv4.5.ff&#39;,
+                 type=&#39;ff&#39;)
+options(&#39;flycircuit.scoremat&#39;=&quot;allbyallblastcv4.5.ff&quot;)
+dps&lt;-read.neuronlistfh(&quot;http://flybrain.mrc-lmb.cam.ac.uk/si/nblast/flycircuit/dpscanon.rds&quot;,
+                       localdir=getOption(&#39;flycircuit.datadir&#39;))
+options(&#39;nat.default.neuronlist&#39;=&#39;dps&#39;)
+if(!require(&quot;devtools&quot;)) install.packages(&quot;devtools&quot;)
+devtools::source_gist(&quot;bbaf5d53353b3944c090&quot;, filename = &quot;FlyCircuitStartupNat.R&quot;)
+dpscanon=read.neurons(dps)</code></pre>
+<p>Next, register your neuron to the FCWB template brain (the template brain space to which the flycircuit neurons are registered). If you want to search for bilateral hits, mirror your neuron about the y-axis of the FCWB template brain Convert this registered neuron to a <a href="http://natverse.org/nat/reference/dotprops.html">dotprops</a> object.</p>
+<pre class="r"><code>#transform brain into FCWB template space 
+g13_FCWB=xform_brain(g13,sample=JFRC2013,reference=FCWB)
+g13_FCWB_mirror=mirror_brain(g13_FCWB,brain=FCWB)</code></pre>
+<pre class="r"><code>#plot the neuron and its mirrored version 
+open3d(userMatrix=rotationMatrix,windowRect=windowRect,zoom=0.6)
+plot3d(g13_FCWB,lwd=3,col=&#39;black&#39;,WithNodes=FALSE)
+plot3d(g13_FCWB_mirror,lwd=3,col=&#39;black&#39;,WithNodes=FALSE)
+plot3d(FCWB,alpha=0.2)</code></pre>
+<pre class="r"><code>#convert neuron to dotprops object 
+g13_dotprops=dotprops(c(g13_FCWB,g13_FCWB_mirror))</code></pre>
+<p><img src="images/g13_mirrored.png"/></p>
+<p>Finally, call nbast() with your neuron as the query and the flycircuit data as the target</p>
+<pre class="r"><code>nblast_fc=nblast(g13_dotprops,target = dpscanon, normalised = TRUE);
+
+#display top 10 hits 
+nblast_fc_df=data.frame(name=names(nblast_fc),score=as.numeric(nblast_fc))
+nblast_fc_df[order(-nblast_fc_df$score),][1:10,]</code></pre>
+<pre><code>##                          name     score
+## 3683  FruMARCM-F002193_seg001 0.3951901
+## 660   FruMARCM-M001871_seg001 0.3893991
+## 15289  DvGlutMARCM-F1739_seg1 0.3845581
+## 440   FruMARCM-M001554_seg001 0.3843038
+## 11532 ChaMARCM-F000012_seg002 0.3742967
+## 4737  FruMARCM-F002081_seg001 0.3666721
+## 4463  FruMARCM-F001540_seg001 0.3564973
+## 12912  DvGlutMARCM-F2008_seg1 0.3558630
+## 645   FruMARCM-M001857_seg001 0.3538165
+## 3739  FruMARCM-F002354_seg001 0.3537375</code></pre>
+<pre class="r"><code>#plot top 10 hits 
+open3d(userMatrix=rotationMatrix,windowRect=windowRect,zoom=0.6)
+plot3d(g13_FCWB,lwd=3,col=&#39;black&#39;,WithNodes=FALSE)
+top10_neurons=dpscanon[nblast_fc_df$name[1:10]]
+plot3d(top10_neurons)</code></pre>
+<p><img src="images/g13_fc_nblast.png"/></p>
+<p><font size=5> Using NBLAST to find Gal4 lines</font></p>
+<p>To find Gal4 lines similar to your neuron of interest, first download the Gal4 data. This takes a while but only needs to be done once. (Note: this database contains only GMR lines)</p>
+<pre class="r"><code>gmrdps&lt;-read.neuronlistfh(&quot;http://flybrain.mrc-lmb.cam.ac.uk/si/nblast/gmrdps/gmrdps.rds&quot;,
+                          localdir=getOption(&#39;flycircuit.datadir&#39;))</code></pre>
+<p>Next, register your neuron to the FCWB template brain (the template brain space to which the Gal4 line data is registered). If you want to search for bilateral hits, mirror your neuron about the y-axis of the FCWB template brain Convert this registered neuron to a <a href="http://natverse.org/nat/reference/dotprops.html">dotprops</a> object.</p>
+<pre class="r"><code>#transform brain into FCWB template space 
+g13_FCWB_mirror=mirror_brain(g13_FCWB,brain=FCWB)
+
+#convert neuron to dotprops object 
+g13_dotprops=dotprops(c(g13_FCWB,g13_FCWB_mirror))</code></pre>
+<p>Finally, call nbast with your neuron and the Gal4 data as inputs</p>
+<pre class="r"><code>nblast_gal4=nblast(g13_dotprops,target = gmrdps, normalised = TRUE);
+
+#display top 10  hits
+nblast_gal4_df=data.frame(name=names(nblast_gal4),score=as.numeric(nblast_gal4))
+nblast_gal4_df[order(-nblast_gal4_df$score),][1:10,]</code></pre>
+<pre><code>##       name     score
+## 1528 48B06 0.5386692
+## 440  20E07 0.5099647
+## 995  33H03 0.4711920
+## 1179 38H03 0.4550335
+## 1643 50E11 0.4465296
+## 486  21C11 0.4329973
+## 19   10E03 0.4194184
+## 2524 74G09 0.4190854
+## 2500 74C11 0.4029378
+## 623  24C06 0.3973524</code></pre>
+<pre class="r"><code>#plot top hit 
+open3d(userMatrix=rotationMatrix,windowRect=windowRect,zoom=0.6)
+plot3d(g13_FCWB,lwd=3,col=&#39;black&#39;,WithNodes=FALSE)
+top_neuron=gmrdps[nblast_gal4_df$name[1]]
+plot3d(top_neuron)</code></pre>
+<p><img src="images/g13_gal4_nblast.png"/></p>
+<p><font size=5> Using NBLAST to find Hemibrain neurons</font> As before, you first need to register your neuron to the FCWB template brain and convert it to a dotprops object. Next, load in the hemibrain data, which has been converted to a format compatible with the nblast() function</p>
+<pre class="r"><code>#load in hemibrain data 
+hemibrain_canon=read.neurons(&#39;//files.med.harvard.edu/neurobio/manuals, protocols, and databases/NBLAST/hemibrain_dps_pruned.rds&#39;)</code></pre>
+<pre class="r"><code>hemibrain_canon=read.neurons(&#39;Z:/manuals, protocols, and databases/NBLAST/hemibrain_dps_pruned.rds&#39;)</code></pre>
+<p>Then, run the nblast search</p>
+<pre class="r"><code>nblast_results=nblast(g13_dotprops,target = hemibrain_canon,normalised = TRUE)
+nblast_results_df=data.frame(&quot;bodyid&quot;= names(nblast_results),&quot;score&quot;= as.double(nblast_results))
+
+#display top 10  hits
+nblast_results_df[order(-nblast_results_df$score)[1:10],]</code></pre>
+<pre><code>##             bodyid     score
+## 23365 1140245595_L 0.3529338
+## 23366 1140249804_L 0.3415788
+## 26381 1436629378_L 0.3311934
+## 37388 5813057245_L 0.3270918
+## 26874 1479618250_L 0.3242068
+## 23803 1170939344_L 0.3177033
+## 37763 5813069512_L 0.3141829
+## 28475 1696530677_L 0.3126074
+## 37827 5813075030_L 0.3068374
+## 30242 1963523237_L 0.2965321</code></pre>
+<pre class="r"><code>#plot top 3 hits 
+top3_hits=nblast_results_df[order(-nblast_results_df$score)[1:3],]
+top3_names=top3_hits$bodyid
+top3_neurons=hemibrain_canon[top3_names]
+open3d(userMatrix=rotationMatrix,windowRect=windowRect,zoom=0.6)
+plot3d(FCWB)
+plot3d(g13_FCWB,lwd=3,col=&#39;black&#39;)
+plot3d(top3_neurons, soma=T)</code></pre>
+<p><img src="images/g13_hemibrain_nblast.png"/></p>
+
+
+
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.header').parent('thead').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- tabsets -->
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open')
+  });
+});
+</script>
+
+<!-- code folding -->
+
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>
