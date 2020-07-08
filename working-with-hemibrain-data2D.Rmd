@@ -7,7 +7,7 @@ knitr::opts_chunk$set(echo = TRUE)
 library(knitr)
 library(rgl)
 knit_hooks$set(webgl = hook_webgl)
-source('C:/Users/Wilson Lab/Documents/nat-guide/nat-startup.R')
+source('nat-startup.R')
 ```
 
 ```{r global_options,include=FALSE}
@@ -15,7 +15,7 @@ knitr::opts_chunk$set(warning=FALSE, message=FALSE)
 ```
 
 Data from the Janelia hemibrain release is available at: https://neuprint.janelia.org/?dataset=hemibrain:v1.0.1&qt=findneurons 
-The package [neuprintr](http://natverse.org/neuprintr/reference/index.html) can be used to work with this data in R 
+The packages [neuprintr](http://natverse.org/neuprintr/reference/index.html) and [hemibrainr](https://flyconnectome.github.io/hemibrainr/index.html) can be used to work with this data in R 
 
 <font size=5> Fetch Hemibrain Skeletons </font>
 
@@ -24,6 +24,7 @@ To access hemibrain data using R, you first have to login to the neuPrint server
 ```{r,echo=TRUE,results='hide',message=FALSE,warning=FALSE,eval=FALSE}
 conn = neuprint_login(server= "https://neuprint.janelia.org/",
                       token= "yourtokenhere")
+options(neuprint_dataset="hemibrain:v1.1")
 ```
 ```{r, include=FALSE}
 conn = neuprint_login(server= "https://neuprint.janelia.org/",
@@ -54,7 +55,7 @@ clear3d()
 ```{r}
 neuprint_ROIs()
 ```
-To fetch these messages, use [neuprint_ROI_mesh](http://natverse.org/neuprintr/reference/neuprint_ROI_mesh.html): 
+To fetch these meshes, use [neuprint_ROI_mesh](http://natverse.org/neuprintr/reference/neuprint_ROI_mesh.html): 
 ```{r,echo=TRUE,results='hide',message=FALSE,warning=FALSE,eval=FALSE}
 #plot our neurons of interest 
 open3d(userMatrix=hemibrainMatrix,windowRect=windowRect,zoom=0.7)
@@ -148,7 +149,7 @@ plot<-ggplot(R1_all_partners.m,aes(fill=variable,x=Groups,y=value))+geom_bar(sta
   coord_flip()+theme_bw()+scale_x_discrete(name ="Region")+ ylab('Synapse Count')+theme(legend.position="none")+scale_fill_manual(values=c("red","blue"))
 print(plot)
 ```
-<img src="images/R1_all_synapses_barplot.png"/>
+<img src="images/R1_all_synapses_barplot.png" width="500" height="500" />
 
 
 We can also look only at the synaptic partners which are common to the set of all R1 neurons using neuprint_common_connectivity
@@ -185,7 +186,7 @@ R1_plot=ggplot(R1_common_partners.m,aes(fill=variable,x=Groups,y=value))+geom_ba
   coord_flip()+theme_bw()+scale_x_discrete(name ="Neuron Type")+ ylab('# Connections')+theme(legend.position="none")+scale_fill_manual(values=c("blue","red"))
 print(R1_plot)
 ```
-<img src="images/R1_common_partners_barplot.png"/>
+<img src="images/R1_common_partners_barplot.png" width="400" height="400" />
 
 <font size=5> Evaluate neuron connectivity</font>
 
