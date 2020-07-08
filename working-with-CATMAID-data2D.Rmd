@@ -77,7 +77,7 @@ plot3d(FAFB)
 
 Synapses can be grouped based on brain region using [inside_neuropils](https://jefferislab.github.io/catnat/reference/inside_neuropils.html)
 
-```{r, webgl=TRUE, echo=TRUE,results='hide'}
+```{r,echo=TRUE,results='hide'}
 DNa02=read.neurons.catmaid(12526673)
 ```
 First, grouping the presynaptic partners of our neuron by brain region, we get: 
@@ -105,7 +105,7 @@ all_neuropils_df.m$Groups <- factor(all_neuropils_df.m$names, levels = all_neuro
 ggplot(all_neuropils_df.m,aes(fill=variable,x=Groups,y=value))+geom_bar(stat="identity")+
   coord_flip()+theme_bw()+scale_x_discrete(name ="Region")+ ylab('Synapse Count')+theme(legend.position="none")+scale_fill_manual(values=c("red","blue"))
 ```
-<img src="images/A2_connections_grouped.png"/>
+<img src="images/A2_connections_grouped.png" width="500" height="500" />
 
 <font size=5> Get synaptic partners</font>
 
@@ -157,7 +157,7 @@ gplots::heatmap.2(x=connectivity_matrix,cexRow=1,cexCol=1,margins = c(9, 9))
 
 Each synaptic connection has a unique <b>connector_id</b>. Here, we find all incoming and outgoing partners of our neuron of interest, and list the partners with the greatest numbers of synaptic connections. The top incoming partners(red), the top outgoing partners(blue), and our neuron of interest(black) are plotted below.
 
-```{r, webgl=TRUE, echo=TRUE}
+```{r,echo=TRUE}
 
 #get all connections 
 connector_table=data.table(catmaid_get_connector_table(12526673))
