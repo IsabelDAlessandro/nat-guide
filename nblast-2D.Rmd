@@ -1,0 +1,187 @@
+---
+title: "NBLAST"
+---
+
+```{r setup, include=FALSE}
+setwd('C:/Users/Wilson Lab/Desktop/nat-guide')
+source('nat-startup.R')
+knitr::opts_chunk$set(echo = TRUE)
+library(knitr)
+library(rgl)
+knit_hooks$set(webgl = hook_webgl)
+```
+
+```{r global_options,include=FALSE}
+knitr::opts_chunk$set(warning=FALSE, message=FALSE)
+rotationMatrix=rbind(c(1,0,0,0),c(0,-1,0,0),c(0,0,-1,0),c(0,0,0,1))
+windowRect=c(1221,231,1767,700)
+```
+
+The package [nat.nblast](http://natverse.org/nat.nblast/) implements the NBLAST neuron similarity algorithm described in [Costa et al. 2016](http://doi.org/10.1016/j.neuron.2016.06.012). 
+
+<font size=5> Using NBLAST to assess neuron similarity </font>
+
+NBLAST can be used to assess the similarity between neurons. In this example, NBLAST is used to compare a neuron drawn from a light-level tracing and a neuron drawn from an EM reconstruction (plotted in black and blue, respectively).
+```{r,echo=TRUE,results='hide',message=FALSE,warning=FALSE}
+neuronTracing <- read.neuron('docs/data/registeredNeuron_JFRC2013.swc',class="neuron")
+A2_EM<- read.neuron('docs/data/DNa02_01_09_2020.swc')
+neuronEM<- xform_brain(A2_EM,sample=FAFB, reference = JFRC2013)
+```
+```{r,echo=TRUE,results='hide',message=FALSE,warning=FALSE,eval=FALSE}
+#plot both neurons 
+open3d(userMatrix=rotationMatrix,windowRect=windowRect,zoom=0.6)
+plot3d(neuronTracing,lwd=3,col='black',WithNodes=FALSE)
+plot3d(neuronEM,lwd=3,col='blue',WithNodes=FALSE)
+plot3d(JFRC2013)
+```
+<img src="images/A2_tracing_EM.png"/>
+
+```{r,echo=TRUE,results='hide',warning=FALSE,message=FALSE}
+all_neurons=neuronlist(neuronTracing,neuronEM)
+nblast_scores=nblast_allbyall(all_neurons,smat = NULL, distance = FALSE)
+```
+
+```{r,echo=FALSE}
+neuron_names=c('neuronTracing','neuronEM')
+scores<- matrix(ncol=length(all_neurons),nrow=length(all_neurons))
+for (i in 1:length(all_neurons)){
+    for (j in 1:length(all_neurons)){
+      scores[i,j]=nblast(all_neurons[i],all_neurons[j],normalised=TRUE)
+    }
+}
+normalized_scores=data.frame(scores)
+rownames(normalized_scores) <- neuron_names
+colnames(normalized_scores)<-neuron_names
+normalized_scores
+```
+
+<font size=5> Using NBLAST to find flycircuit clones </font>
+
+NBLAST can also be used to query databases of neurons based on similarity to your neuron of interest. 
+
+First, load in your neuron of interest 
+```{r,webgl=TRUE,echo=TRUE,results='hide',message=FALSE}
+g13 <- read.neuron('docs/data/g13_JFRC2013.swc',class="neuron")
+```
+```{r,webgl=TRUE,echo=TRUE,results='hide',message=FALSE,eval=FALSE}
+open3d(userMatrix=rotationMatrix,windowRect=windowRect,zoom=0.6)
+plot3d(g13,lwd=3,col='black',WithNodes=FALSE)
+```
+<img src="images/g13_neuron.png"/>
+
+To find flycircuit clones,download the flycircuit data and convert it to a dotprops object(this takes a while but only needs to be done once )
+
+```{r A2plots, echo=TRUE,results='hide',message=FALSE,warning=FALSE}
+fc_download_data('http://flybrain.mrc-lmb.cam.ac.uk/si/nblast/flycircuit/allbyallblastcv4.5.ff',
+                 type='ff')
+options('flycircuit.scoremat'="allbyallblastcv4.5.ff")
+dps<-read.neuronlistfh("http://flybrain.mrc-lmb.cam.ac.uk/si/nblast/flycircuit/dpscanon.rds",
+                       localdir=getOption('flycircuit.datadir'))
+options('nat.default.neuronlist'='dps')
+if(!require("devtools")) install.packages("devtools")
+devtools::source_gist("bbaf5d53353b3944c090", filename = "FlyCircuitStartupNat.R")
+dpscanon=read.neurons(dps)
+```
+Next, register your neuron to the FCWB template brain (the template brain space to which the flycircuit neurons are registered).
+If you want to search for bilateral hits, mirror your neuron about the y-axis of the FCWB template brain
+Convert this registered neuron to a  [dotprops](http://natverse.org/nat/reference/dotprops.html) object.
+```{r,echo=TRUE,results='hide',message=FALSE}
+#transform brain into FCWB template space 
+g13_FCWB=xform_brain(g13,sample=JFRC2013,reference=FCWB)
+g13_FCWB_mirror=mirror_brain(g13_FCWB,brain=FCWB)
+```
+```{r,echo=TRUE,results='hide',message=FALSE,eval=FALSE}
+#plot the neuron and its mirrored version 
+open3d(userMatrix=rotationMatrix,windowRect=windowRect,zoom=0.6)
+plot3d(g13_FCWB,lwd=3,col='black',WithNodes=FALSE)
+plot3d(g13_FCWB_mirror,lwd=3,col='black',WithNodes=FALSE)
+plot3d(FCWB,alpha=0.2)
+```
+```{r,echo=TRUE,results='hide',message=FALSE}
+#convert neuron to dotprops object 
+g13_dotprops=dotprops(c(g13_FCWB,g13_FCWB_mirror))
+```
+<img src="images/g13_mirrored.png"/>
+
+Finally, call nbast() with your neuron as the query and the flycircuit data as the target
+```{r,echo=TRUE,message=FALSE}
+nblast_fc=nblast(g13_dotprops,target = dpscanon, normalised = TRUE);
+
+#display top 10 hits 
+nblast_fc_df=data.frame(name=names(nblast_fc),score=as.numeric(nblast_fc))
+nblast_fc_df[order(-nblast_fc_df$score),][1:10,]
+```
+```{r,echo=TRUE,message=FALSE,eval=FALSE}
+#plot top 10 hits 
+open3d(userMatrix=rotationMatrix,windowRect=windowRect,zoom=0.6)
+plot3d(g13_FCWB,lwd=3,col='black',WithNodes=FALSE)
+top10_neurons=dpscanon[nblast_fc_df$name[1:10]]
+plot3d(top10_neurons)
+```
+<img src="images/g13_fc_nblast.png"/>
+
+<font size=5> Using NBLAST to find Gal4 lines</font>
+
+To find Gal4 lines similar to your neuron of interest, first download the Gal4 data. This takes a while but only needs to be done once. (Note: this database contains only GMR lines)
+```{r,echo=TRUE}
+gmrdps<-read.neuronlistfh("http://flybrain.mrc-lmb.cam.ac.uk/si/nblast/gmrdps/gmrdps.rds",
+                          localdir=getOption('flycircuit.datadir'))
+```
+
+Next, register your neuron to the FCWB template brain (the template brain space to which the Gal4 line data is registered).
+If you want to search for bilateral hits, mirror your neuron about the y-axis of the FCWB template brain
+Convert this registered neuron to a  [dotprops](http://natverse.org/nat/reference/dotprops.html) object.
+
+```{r, echo=TRUE,results='hide',message=FALSE}
+#transform brain into FCWB template space 
+g13_FCWB_mirror=mirror_brain(g13_FCWB,brain=FCWB)
+
+#convert neuron to dotprops object 
+g13_dotprops=dotprops(c(g13_FCWB,g13_FCWB_mirror))
+```
+
+Finally, call nbast with your neuron and the Gal4 data as inputs
+```{r,echo=TRUE,message=FALSE}
+nblast_gal4=nblast(g13_dotprops,target = gmrdps, normalised = TRUE);
+
+#display top 10  hits
+nblast_gal4_df=data.frame(name=names(nblast_gal4),score=as.numeric(nblast_gal4))
+nblast_gal4_df[order(-nblast_gal4_df$score),][1:10,]
+```
+```{r,echo=TRUE,message=FALSE,eval=FALSE}
+#plot top hit 
+open3d(userMatrix=rotationMatrix,windowRect=windowRect,zoom=0.6)
+plot3d(g13_FCWB,lwd=3,col='black',WithNodes=FALSE)
+top_neuron=gmrdps[nblast_gal4_df$name[1]]
+plot3d(top_neuron)
+```
+<img src="images/g13_gal4_nblast.png"/>
+
+<font size=5> Using NBLAST to find Hemibrain neurons</font>
+As before, you first need to register your neuron to the FCWB template brain and convert it to a dotprops object. Next, load in the hemibrain data, which has been converted to a format compatible with the nblast() function 
+```{r,echo=TRUE,message=FALSE,eval=FALSE}
+#load in hemibrain data 
+hemibrain_canon=read.neurons('//files.med.harvard.edu/neurobio/manuals, protocols, and databases/NBLAST/hemibrain_dps_pruned.rds')
+```
+```{r,echo=TRUE,message=FALSE}
+hemibrain_canon=read.neurons('Z:/manuals, protocols, and databases/NBLAST/hemibrain_dps_pruned.rds')
+```
+Then, run the nblast search 
+```{r,echo=TRUE,message=FALSE}
+nblast_results=nblast(g13_dotprops,target = hemibrain_canon,normalised = TRUE)
+nblast_results_df=data.frame("bodyid"= names(nblast_results),"score"= as.double(nblast_results))
+
+#display top 10  hits
+nblast_results_df[order(-nblast_results_df$score)[1:10],]
+```
+```{r,echo=TRUE,message=FALSE,eval=FALSE}
+#plot top 3 hits 
+top3_hits=nblast_results_df[order(-nblast_results_df$score)[1:3],]
+top3_names=top3_hits$bodyid
+top3_neurons=hemibrain_canon[top3_names]
+open3d(userMatrix=rotationMatrix,windowRect=windowRect,zoom=0.6)
+plot3d(FCWB)
+plot3d(g13_FCWB,lwd=3,col='black')
+plot3d(top3_neurons, soma=T)
+```
+<img src="images/g13_hemibrain_nblast.png"/>
