@@ -8,7 +8,7 @@ navbar:
    - text: "Basic Nat Funcions"
      href: basic-nat-functions.html
    - text: "NBLAST"
-     href: nblast.html
+     href: nblast-2D.html
    - text: "CATMAID"
      href: working-with-CATMAID-data2D.html
    - text: "Hemibrain"
