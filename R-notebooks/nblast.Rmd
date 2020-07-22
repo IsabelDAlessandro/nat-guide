@@ -36,11 +36,14 @@ plot3d(JFRC2013)
 clear3d()
 ```
 ```{r,echo=TRUE,results='hide',warning=FALSE,message=FALSE}
+#run nblast comparison
 all_neurons=neuronlist(neuronTracing,neuronEM)
 nblast_scores=nblast_allbyall(all_neurons,smat = NULL, distance = FALSE)
+nblast_scores
 ```
 
 ```{r,echo=FALSE}
+#normalize nblast scores 
 neuron_names=c('neuronTracing','neuronEM')
 scores<- matrix(ncol=length(all_neurons),nrow=length(all_neurons))
 for (i in 1:length(all_neurons)){
@@ -109,6 +112,12 @@ nblast_fc=nblast(g13_dotprops,target = dpscanon, normalised = TRUE);
 #display top 10 hits 
 nblast_fc_df=data.frame(name=names(nblast_fc),score=as.numeric(nblast_fc))
 nblast_fc_df[order(-nblast_fc_df$score),][1:10,]
+
+#plot top 10 hits 
+open3d(userMatrix=rotationMatrix,windowRect=windowRect,zoom=0.6)
+plot3d(g13_FCWB,lwd=3,col='black',WithNodes=FALSE)
+top10_neurons=dpscanon[nblast_fc_df$name[1:10]]
+plot3d(top10_neurons)
 ```
 
 <font size=5> Using NBLAST to find Gal4 lines</font>
@@ -147,4 +156,35 @@ nblast_gal4=nblast(g13_dotprops,target = gmrdps, normalised = TRUE);
 #display 10  hits
 nblast_gal4_df=data.frame(name=names(nblast_gal4),score=as.numeric(nblast_gal4))
 nblast_gal4_df[order(-nblast_gal4_df$score),][1:10,]
+
+#plot top hit 
+open3d(userMatrix=rotationMatrix,windowRect=windowRect,zoom=0.6)
+plot3d(g13_FCWB,lwd=3,col='black',WithNodes=FALSE)
+top_neuron=gmrdps[nblast_gal4_df$name[1]]
+plot3d(top_neuron)
+```
+
+<font size=5> Using NBLAST to find Hemibrain neurons</font>
+As before, you first need to register your neuron to the FCWB template brain and convert it to a dotprops object. Next, load in the hemibrain data, which has been converted to a format compatible with the nblast() function 
+
+```{r,echo=TRUE,message=FALSE}
+#change to match the file path on your computer 
+hemibrain_canon=read.neurons('Z:/manuals, protocols, and databases/NBLAST/hemibrain_dps_pruned.rds')
+```
+Then, run the nblast search 
+```{r,echo=TRUE,message=FALSE}
+nblast_results=nblast(g13_dotprops,target = hemibrain_canon,normalised = TRUE)
+nblast_results_df=data.frame("bodyid"= names(nblast_results),"score"= as.double(nblast_results))
+
+#display top 10  hits
+nblast_results_df[order(-nblast_results_df$score)[1:10],]
+
+#plot top 3 hits 
+top3_hits=nblast_results_df[order(-nblast_results_df$score)[1:3],]
+top3_names=top3_hits$bodyid
+top3_neurons=hemibrain_canon[top3_names]
+open3d(userMatrix=rotationMatrix,windowRect=windowRect,zoom=0.6)
+plot3d(FCWB)
+plot3d(g13_FCWB,lwd=3,col='black')
+plot3d(top3_neurons, soma=T)
 ```
